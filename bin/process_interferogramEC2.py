@@ -57,7 +57,10 @@ def create_bash_script(inps):
     '''
     with open('run_interferogram.sh', 'w') as bash:
         bash.write('''#!/bin/bash 
+echo "Running interferogram generation script..."
+
 # Initialize software
+source ~/.bashrc
 start_isce
 
 # Get the latest python scripts from github & add to path
@@ -80,19 +83,21 @@ cp *xml *log merged
 aws s3 sync merged/ s3://int-{master}-{slave}/ 
 
 # Close instance
-#shutdown
+echo "Finished interferogram... shutting down"
+#poweroff
 
 '''.format(**vars(inps)))
 
 
-def launch_ec2(ami='ami-d015daa8', instance='c4.4xlarge', key='isce_key',
+def launch_ec2(ami='ami-d015daa8', instance='t2.micro', key='isce-key',
                security_group='sg-eee2ef93'):
     '''
     launch an ec2 with interferogram script
+    Reasonable instances: 'c4.4xlarge' 
     '''
     cmd = ('aws ec2 run-instances --image-id {0} --count 1 --instance-type {1}' 
-    '--key-name {2} --security-group-ids {3}'
-    '--user-data run_interferogram.sh').format(ami,instance,key,security_group)
+    ' --key-name {2} --security-group-ids {3}'
+    ' --user-data file://run_interferogram.sh').format(ami,instance,key,security_group)
     print(cmd)
     #os.system(cmd)
 
