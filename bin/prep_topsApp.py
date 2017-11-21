@@ -190,7 +190,7 @@ if __name__ == '__main__':
 
     inps = cmdLineParse()
     gf = load_inventory(inps.inventory)
-    intdir = 'int_{0}_{1}'.format(inps.master, inps.slave)
+    intdir = 'int-{0}-{1}'.format(inps.master, inps.slave)
     if not os.path.isdir(intdir):
         os.mkdir(intdir)
     os.chdir(intdir)
