@@ -58,14 +58,20 @@ def create_bash_script(inps):
     with open('run_interferogram.sh', 'w') as bash:
         bash.write('''#!/bin/bash 
 echo "Running interferogram generation script..."
+echo $PWD
+cd /home/ubuntu
+echo $PWD
 
-# Initialize software
-source ~/.bashrc
+# Initialize software warning - defaults to root directory
+#source ~/.bashrc
+#source ~/.aliases
+source /home/ubuntu/.aliases
 start_isce
 
 # Get the latest python scripts from github & add to path
 git clone https://github.com/scottyhq/dinoSAR.git
-echo PATH=/home/ubuntu/dinoSAR/bin:$PATH
+export PATH=/home/ubuntu/dinoSAR/bin:$PATH
+echo $PATH
 
 # Download inventory file
 get_inventory_asf.py -r {roi}
@@ -104,6 +110,11 @@ def launch_ec2(ami='ami-d015daa8', instance='t2.micro', key='isce-key',
 
 if __name__ == '__main__':
     inps = cmdLineParse()
+    # convert lists to strings
+    inps.roi = ' '.join([str(x) for x in inps.roi])
+    inps.gbox = ' '.join([str(x) for x in inps.gbox])
+    inps.swaths = ' '.join([str(x) for x in inps.swaths])
+    
     create_bash_script(inps)
     print('Running Interferogram on EC2')
     launch_ec2()
