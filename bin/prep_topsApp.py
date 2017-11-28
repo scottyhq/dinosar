@@ -63,7 +63,7 @@ def download_scene(downloadUrl):
     print('Downloading frame from ASF...')
     print('Requires ~/.netrc file:  ')
     print('See: https://winsar.unavco.org/software/release_note_isce-2.1.0.txt')
-    cmd = 'wget -nc -c {}'.format(downloadUrl) #nc won't overwrite. -c continuous if unfinished
+    cmd = 'wget -q -nc -c {}'.format(downloadUrl) #nc won't overwrite. -c continuous if unfinished -q is for 'quiet mode' since many incremental download % updates go to /var/log/cloud-init-output.log
     print(cmd)
     os.system(cmd)
 
@@ -103,7 +103,7 @@ def download_orbit(granuleName):
     # get matching orbit file
     dfSat['startTime'] = dfSat.orbit.str[42:50]
     match = dfSat.loc[dfSat.startTime == dayBeforeStr, 'orbit'].values[0]
-    cmd = 'wget -nc {}/{}'.format(url,match) #-nc means no clobber
+    cmd = 'wget -q -nc {}/{}'.format(url,match) #-nc means no clobber
     print(cmd)
     os.system(cmd)
     os.chdir(cwd)
@@ -118,7 +118,7 @@ def download_auxcal():
     os.chdir(os.environ['AUXCAL'])
     print('Downloading S1 AUXILARY DATA...')
     url = 'https://s1qc.asf.alaska.edu/aux_cal'
-    cmd = 'wget -r -l2 -nc -nd -np -nH -A SAFE {}'.format(url)
+    cmd = 'wget -q -r -l2 -nc -nd -np -nH -A SAFE {}'.format(url)
     print(cmd)
     os.system(cmd)
     os.chdir(cwd)
