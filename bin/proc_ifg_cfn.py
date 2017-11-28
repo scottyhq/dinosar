@@ -7,7 +7,7 @@ Note: intended for single interferogram processing. For batch processing
 figure out how to store common data and DEM on an EFS drive
 
 # EXAMPLE:
-proc_ifg_cfn.py -p 115 -m 20170927 -s 20170915 -n 2 -r 44.0 44.5 -122.0 -121.5 -g 44.0 44.5 -122.0 -121.5
+proc_ifg_cfn.py -i c4.4xlarge -p 115 -m 20170927 -s 20170915 -n 2 -r 44.0 44.5 -122.0 -121.5 -g 44.0 44.5 -122.0 -121.5
 
 c4.4xlarge
 
@@ -64,11 +64,17 @@ Resources:
   MyEC2Instance:
     Type: "AWS::EC2::Instance"
     Properties: 
-      ImageId: "ami-a3c518db"
+      ImageId: "ami-8deb36f5"
       InstanceType: "{instance}"
       KeyName: "isce-key"
       SecurityGroups: ["isce-sg",]
       BlockDeviceMappings:
+        -
+          DeviceName: /dev/sda1
+          Ebs:
+            VolumeType: gp2
+            VolumeSize: 8
+            DeleteOnTermination: true
         -
           DeviceName: /dev/xvdf
           Ebs:
@@ -78,27 +84,29 @@ Resources:
       UserData:
         'Fn::Base64': !Sub |
           #!/bin/bash -xe
-          # create mount point directory
-          mkdir /home/ubuntu/data
+          # create mount point directory NOTE all commands run as root
+          #mkdir /mnt/data
           # create ext4 filesystem on new volume
           mkfs -t ext4 /dev/xvdf
           # add an entry to fstab to mount volume during boot
-          echo "/dev/xvdf       /home/ubuntu/data   ext4    defaults,nofail 0       2" >> /etc/fstab
+          echo "/dev/xvdf       /mnt/data   ext4    defaults,nofail 0       2" >> /etc/fstab
           # mount the volume on current boot
           mount -a
-          # Initialize software
-          source /home/ubuntu/.bashrc
-          cd /home/ubuntu
-          #start_isce
+          chown -R ubuntu /mnt/data
+          sudo -i -u ubuntu bash <<"EOF" 
+          export PATH="/home/ubuntu/miniconda3/envs/isce-2.1.0/bin:/home/ubuntu/.local/bin:$PATH"
+          source /home/ubuntu/ISCECONFIG
+          # Make directories for processing - already in AMI
+          cd /mnt/data
+          mkdir dems poeorb auxcal
           # Get the latest python scripts from github & add to path
           git clone https://github.com/scottyhq/dinoSAR.git
-          export PATH=/home/ubuntu/dinoSAR/bin:$PATH
+          export PATH=/mnt/data/dinoSAR/bin:$PATH
           echo $PATH
           # Download inventory file
-          cd data
           get_inventory_asf.py -r {roi}
           # Prepare interferogram directory
-          prep_topsApp.py -i query.geojson -m {master} -s {slave} -n {swaths} -r {roi} -g {gbox}
+          prep_topsApp.py -i query.geojson -p {path} -m {master} -s {slave} -n {swaths} -r {roi} -g {gbox}
           # Run code
           cd int-{master}-{slave}
           topsApp.py 2>&1 | tee topsApp.log
@@ -107,6 +115,7 @@ Resources:
           cp *xml *log merged
           aws s3 sync merged/ s3://int-{master}-{slave}/ 
           # Close instance
+          EOF
           echo "Finished interferogram... shutting down"
           #shutdown
 '''.format(**vars(inps)))
