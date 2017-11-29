@@ -104,7 +104,7 @@ Resources:
           # Get the latest python scripts from github & add to path
           git clone https://github.com/scottyhq/dinoSAR.git
           export PATH=/mnt/data/dinoSAR/bin:$PATH
-          echo $PATH
+          #echo $PATH
           # Download inventory file
           get_inventory_asf.py -r {roi}
           # Prepare interferogram directory
@@ -117,8 +117,9 @@ Resources:
           cp *xml *log merged
           aws s3 sync merged/ s3://int-{master}-{slave}/ 
           # Close instance
-          echo "Finished interferogram... shutting down"
+          #echo "Finished interferogram... shutting down"
           #shutdown #doesn't close entire stack, just EC2
+          aws sns publish --topic-arn "arn:aws:sns:us-west-2:295426338758:email-me" --message file://topsApp.log --subject "int-{master}-{slave} Finished"
           aws cloudformation delete-stack --stack-name proc-{master}-{slave}
           EOF
 '''.format(**vars(inps)))
