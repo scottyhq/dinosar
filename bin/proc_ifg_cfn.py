@@ -83,7 +83,8 @@ Resources:
             DeleteOnTermination: true
       UserData:
         'Fn::Base64': !Sub |
-          #!/bin/bash -xe
+          #!/bin/bash
+          # add -xe to above line for debugging output to /var/log/cloud-init-output.log
           # create mount point directory NOTE all commands run as root
           #mkdir /mnt/data
           # create ext4 filesystem on new volume
@@ -95,6 +96,7 @@ Resources:
           chown -R ubuntu /mnt/data
           sudo -i -u ubuntu bash <<"EOF" 
           export PATH="/home/ubuntu/miniconda3/envs/isce-2.1.0/bin:/home/ubuntu/.local/bin:$PATH"
+          export GDAL_DATA=/home/ubuntu/miniconda3/envs/isce-2.1.0/share/gdal
           source /home/ubuntu/ISCECONFIG
           # Make directories for processing - already in AMI
           cd /mnt/data
@@ -115,9 +117,10 @@ Resources:
           cp *xml *log merged
           aws s3 sync merged/ s3://int-{master}-{slave}/ 
           # Close instance
-          EOF
           echo "Finished interferogram... shutting down"
-          #shutdown
+          #shutdown #doesn't close entire stack, just EC2
+          aws cloudformation delete-stack --stack-name proc-{master}-{slave}
+          EOF
 '''.format(**vars(inps)))
 
         return filename
@@ -130,7 +133,7 @@ def launch_stack(template):
     name = template[:-4]
     cmd = 'aws cloudformation create-stack --stack-name {0} --template-body file://{1}'.format(name,template)
     print(cmd)
-    #os.system(cmd)
+    os.system(cmd)
 
 
 if __name__ == '__main__':
@@ -143,5 +146,3 @@ if __name__ == '__main__':
     print('Running Interferogram on EC2')
     launch_stack(template)
     print('EC2 should close automatically when finished...')
-    
-    
