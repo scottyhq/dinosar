@@ -18,7 +18,7 @@ from shapely.geometry import box, mapping
 import pandas as pd
 import geopandas as gpd
 import os
-
+import sys
 
 def cmdLineParse():
     '''
@@ -34,8 +34,14 @@ def cmdLineParse():
             help='Add buffer [in degrees]')
     parser.add_argument('-f', action='store_true', default=False, dest='footprints', required=False,
             help='Create subfolders with geojson footprints')
+    parser.add_argument('-k', action='store_true', default=False, dest='kmls', required=False,
+            help='Download kmls from ASF API')
+    parser.add_argument('-c', action='store_true', default=False, dest='csvs', required=False,
+            help='Download csvs from ASF API')
 
-    return parser.parse_args()
+
+
+    return parser
 
 
 def load_asf_json(jsonfile):
@@ -130,6 +136,8 @@ def summarize_inventory(gf):
     dfS.index.name = 'Orbit'
     dfS.to_csv('inventory_summary.csv')
     print(dfS)
+    size = dfS.Frames.sum()*5 / 1e3
+    print('Approximate Archive size = {} Tb'.format(size))
 
 
 def merge_inventories(s1Afile, s1Bfile):
@@ -166,7 +174,7 @@ def download_scene(downloadUrl):
     os.system(cmd)
     #use requests.get(auth=())
 
-def query_asf(snwe, sat='1A'):
+def query_asf(snwe, sat='1A', format='json'):
     '''
     takes list of [south, north, west, east]
     '''
@@ -181,10 +189,10 @@ def query_asf(snwe, sat='1A'):
             platform='Sentinel-{}'.format(sat),
             processingLevel='SLC',
             beamMode='IW',
-            output='json')
+            output=format)
 
     r = requests.get(baseurl, params=data)
-    with open('query_S{}.json'.format(sat), 'w') as j:
+    with open('query_S{}.{}'.format(sat,format), 'w') as j:
         j.write(r.text)
 
     #Directly to dataframe
@@ -218,7 +226,13 @@ def snwe2file(args):
 
 
 if __name__ == '__main__':
-    args = cmdLineParse()
+    parser = cmdLineParse()
+    args = parser.parse_args()
+    if not (args.roi or args.input):
+        print("ERROR: requires '-r' or '-i' argument") 
+        #parser.print_usage()
+        parser.print_help()
+        sys.exit(1)
     if args.input:
         ogr2snwe(args)
     snwe2file(args)
@@ -228,5 +242,10 @@ if __name__ == '__main__':
     summarize_inventory(gf)
     summarize_orbits(gf)
     save_inventory(gf)
+    if args.csvs:
+        query_asf(args.roi, '1A','csv')
+    if args.kmls:
+        query_asf(args.roi, '1A','kml')
     if args.footprints:
 	    save_geojson_footprints(gf) #NOTE: takes a while...
+
