@@ -1,0 +1,4 @@
+versioneer
+flake8
+pytest
+twine
