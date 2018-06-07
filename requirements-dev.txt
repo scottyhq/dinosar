@@ -1,4 +1,5 @@
 versioneer
+sphinx
 flake8
 pytest
 twine
