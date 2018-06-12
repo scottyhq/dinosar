@@ -21,11 +21,16 @@ Updating Verion
 
 Version managment is done with versioneer_
 
-To relase a new version, create a tag, checkout the tag as a local branch, push to pypi:
+To relase a new version, create a tag, checkout the tag as a local branch, push to PYPI:
 
     git tag 0.1.1 ; git push --tags
+
     git checkout tags/0.1.1 -b 0.1.1
+    
     python3 setup.py sdist bdist_wheel
+    
     twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
-.. _https://github.com/warner/python-versioneer/
+
+
+.. _versioneer: https://github.com/warner/python-versioneer/
