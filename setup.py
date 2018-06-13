@@ -1,6 +1,3 @@
-#import os
-#from codecs import open
-
 import versioneer
 import os
 from setuptools import find_packages, setup
@@ -27,7 +24,7 @@ setup(
     author_email='scottyh@uw.edu',
     maintainer='Scott Henderson',
     maintainer_email='scottyh@uw.edu',
-    python_requires='>=3',
+    python_requires='>=3.6',
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -39,7 +36,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Scientific/Engineering'
     ],
-    keywords=['SAR','Cloud','Batch'],
+    keywords=['SAR', 'Cloud', 'Batch', 'AWS'],
     packages=find_packages(),
     install_requires=install_requires,
     scripts=['bin/get_inventory_asf.py'],

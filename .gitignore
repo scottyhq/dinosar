@@ -1,6 +1,8 @@
+# Custom stuff 
 *.pem
 *.bak
 .DS_Store
+tests/tmp/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
