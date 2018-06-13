@@ -1,5 +1,4 @@
 *.pem
-*.yml
 *.bak
 .DS_Store
 
