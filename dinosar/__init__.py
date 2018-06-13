@@ -1,4 +1,4 @@
-print('turning dinoSAR into a python package!')
+"""Dinosar."""
 
 from ._version import get_versions
 __version__ = get_versions()['version']
