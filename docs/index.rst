@@ -10,6 +10,8 @@ Welcome to dinosar's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   quickstart
+   contributing
 
 
 Indices and tables

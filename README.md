@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/scottyhq/dinosar.svg?branch=master)](https://travis-ci.org/scottyhq/dinosar)
+
 # dinoSAR
 tools for InSAR processing on AWS
 

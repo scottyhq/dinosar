@@ -12,11 +12,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
 from dinosar._version import get_versions
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../'))
+sys.path.append(os.path.abspath('../dinosar'))
 
 # -- Project information -----------------------------------------------------
 
@@ -25,11 +25,11 @@ copyright = '2018, Scott Henderson'
 author = 'Scott Henderson'
 
 # The short X.Y version
-#version = '0.1'
+# version = '0.1'
 # The full version, including alpha/beta/rc tags
-#release = '0.1.1'
+# release = '0.1.1'
 # Parse the version from versioneer:
-version = get_versions()['version'].rsplit('.',1)[0]
+version = get_versions()['version'].rsplit('.', 1)[0]
 release = get_versions()['version']
 
 # -- General configuration ---------------------------------------------------
@@ -43,9 +43,11 @@ release = get_versions()['version']
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.githubpages',
 ]
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
