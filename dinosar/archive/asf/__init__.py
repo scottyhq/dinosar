@@ -26,7 +26,7 @@ import subprocess
 import sys
 
 
-def load_asf_json(jsonfile):
+def load_asf_json(jsonfile: str):
     """Convert JSON metadata from ASF query to dataframe.
 
     JSON metadata returned from ASF DAAC API is loaded into a geopandas

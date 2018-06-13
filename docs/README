@@ -1,0 +1,4 @@
+# To regenerate documentation:
+
+sphinx-apidoc -f -o source ../dinosar
+make html
