@@ -17,7 +17,7 @@ Tests are mandatory for new features. We use Pytest_.
 
 
 Updating Version
----------------
+----------------
 
 Version managment is done with versioneer_
 
