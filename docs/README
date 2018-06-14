@@ -2,3 +2,4 @@
 
 sphinx-apidoc -f -o source ../dinosar
 make html
+open _build/html/index.html

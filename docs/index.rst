@@ -10,6 +10,7 @@ Welcome to dinosar's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   install
    quickstart
    contributing
 

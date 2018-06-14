@@ -3,6 +3,7 @@
 *.bak
 .DS_Store
 tests/tmp/
+bin/*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
