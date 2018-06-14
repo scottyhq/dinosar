@@ -1,6 +1,6 @@
 requests>=2.18
 pandas>=0.23
 geopandas>=0.3
-matplotlib>=2.2
-cartopy>=0.16
-cython>=0.15
+#matplotlib>=2.2
+#Cython>=0.15
+#cartopy>=0.16
