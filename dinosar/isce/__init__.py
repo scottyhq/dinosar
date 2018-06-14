@@ -1,8 +1,6 @@
 """Functions for ISCE software.
 
-This module has utilities for querying the NASA Alaska Satellite Facility
-Distributed Active Archive Center (`ASF DAAC`_). Designed to easily search for
-Sentinel-1 SAR scenes load associated JSON metadata into a Geopandas Dataframe.
+This module has functions that facilitate running `ISCE software` (v2.1.0).
 
 Notes
 -----
@@ -10,8 +8,7 @@ This file contains library functions. To run as a script use::
 
     $ get_inventory_asf.py --help
 
-.. _ASF DAAC:
-   https://www.asf.alaska.edu/get-data/api/
+.. _`ISCE software`: https://winsar.unavco.org/software/isce
 
 """
 def load_inventory(vectorFile):
