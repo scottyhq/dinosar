@@ -2,7 +2,7 @@
 *.pem
 *.bak
 .DS_Store
-tests/tmp/
+#tests/tmp/*
 bin/*.pdf
 
 # Byte-compiled / optimized / DLL files
