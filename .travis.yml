@@ -1,7 +1,47 @@
 language: python
-python:
-  - "3.6"
+
+sudo: false
+
+dist: trusty
+
+matrix:
+  fast_finish: true
+  include:
+  - python: 3.6
+    env: TEST_TARGET=default
+  - python: 3.6
+    env: TEST_TARGET=coding_standards
+  allow_failures:
+  - python: 3.6
+    env: TEST_TARGET=coding_standards
+
+before_install:
+  - |
+    URL="http://bit.ly/miniconda"
+    echo ""
+    if [ ! -f $HOME/miniconda/bin/conda ] ; then
+      echo "Fresh miniconda installation."
+      wget $URL -O miniconda.sh
+      rm -rf $HOME/miniconda
+      bash miniconda.sh -b -p $HOME/miniconda
+    fi
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda update conda --yes
+  - conda config --set show_channel_urls true
+  - conda config --add channels conda-forge --force
+  - conda create --yes -n TEST python=$TRAVIS_PYTHON_VERSION --file requirements.txt --file requirements-dev.txt
+  - source activate TEST
+
+# Test source distribution.
 install:
-  - pip install -r requirements.txt
+  - python setup.py sdist && version=$(python setup.py --version) && pushd dist  && pip install dinosar-${version}.tar.gz && popd
+
 script:
-  - pytest
+  - if [[ $TEST_TARGET == 'default' ]]; then
+      cp -r tests /tmp && cd /tmp ;
+      pytest -vv tests ;
+    fi
+    
+  - if [[ $TEST_TARGET == 'coding_standards' ]]; then
+      flake8 --max-line-length=105 dinosar ;
+    fi
