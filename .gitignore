@@ -1,4 +1,5 @@
 # Custom stuff 
+muck/
 *.pem
 *.bak
 .DS_Store

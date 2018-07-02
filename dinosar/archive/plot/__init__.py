@@ -21,34 +21,6 @@ from cartopy.io.img_tiles import GoogleTiles
 # from owslib.wmts import WebMapTileService
 
 
-def load_inventory(inventoryJSON):
-    """Load inventory saved with asf.archive.save_inventory().
-
-    Parameters
-    ----------
-    inventoryJSON : str
-        dinsar inventory file (query.geojson)
-
-    Returns
-    -------
-    gf :  GeoDataFrame
-        A geopandas GeoDataFrame
-
-    """
-    gf = gpd.read_file(inventoryJSON)
-    gf['timeStamp'] = gpd.pd.to_datetime(gf.sceneDate,
-                                         format='%Y-%m-%d %H:%M:%S')
-    gf['sceneDateString'] = gf.timeStamp.apply(
-        lambda x: x.strftime('%Y-%m-%d'))
-    gf['dateStamp'] = gpd.pd.to_datetime(gf.sceneDateString)
-    gf['utc'] = gf.timeStamp.apply(lambda x: x.strftime('%H:%M:%S'))
-    gf['relativeOrbit'] = gf.relativeOrbit.astype('int')
-    gf.sort_values('relativeOrbit', inplace=True)
-    gf['orbitCode'] = gf.relativeOrbit.astype('category').cat.codes
-
-    return gf
-
-
 def plot_map(gf, snwe, vectorFile=None, zoom=8):
     """Plot dinosar inventory on a static map.
 
@@ -130,7 +102,7 @@ def plot_map(gf, snwe, vectorFile=None, zoom=8):
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
 
-    plt.title('Sentinel-1 Orbits')
+    plt.title('Orbital Footprints')
     plt.savefig('map.pdf', bbox_inches='tight')
 
 
@@ -191,11 +163,11 @@ def plot_timeline_table(gf):
     plt.ylim(-1, orbits.size+3)
     plt.ylabel('Orbit Number')
     fig.autofmt_xdate()
-    plt.title('Sentinel-1 timeline')
+    plt.title('Acquisition Timeline')
     plt.savefig('timeline_with_table.pdf', bbox_inches='tight')
 
 
-def plot_timeline(gf):
+def plot_timeline_sentinel(gf):
     """Plot dinosar inventory acquisitions as a timeline.
 
     Parameters
@@ -237,5 +209,41 @@ def plot_timeline(gf):
     plt.ylim(-1, orbits.size)
     plt.ylabel('Orbit Number')
     fig.autofmt_xdate()
-    plt.title('Sentinel-1 timeline')
+    plt.title('Acquisition Timeline')
+    plt.savefig('timeline.pdf', bbox_inches='tight')
+
+
+def plot_timeline(gf, platform1, platform2):
+    """Plot dinosar inventory acquisitions as a timeline.
+
+    Parameters
+    ----------
+    gf :  GeoDataFrame
+        A geopandas GeoDataFrame
+
+    """
+    dfA = gf.query('platform == @platform1')
+    dfB = gf.query('platform == @platform2')
+
+    # Same colors as map
+    orbits = gf.relativeOrbit.unique()
+    colors = plt.cm.jet(np.linspace(0, 1, orbits.size))
+
+    fig, ax = plt.subplots(figsize=(11, 8.5))
+    plt.scatter(dfA.timeStamp.values, dfA.orbitCode.values,
+                edgecolors=colors[dfA.orbitCode.values], facecolors='None',
+                cmap='jet', s=60, label=f'{platform1}')
+    plt.scatter(dfB.timeStamp.values, dfB.orbitCode.values,
+                edgecolors=colors[dfB.orbitCode.values], facecolors='None',
+                cmap='jet', s=60, marker='d', label=f'{platform2}')
+
+    plt.yticks(gf.orbitCode.unique(), gf.relativeOrbit.unique())
+
+    ax.xaxis.set_minor_locator(MonthLocator())
+    ax.xaxis.set_major_locator(YearLocator())
+    plt.legend(loc='lower right')
+    plt.ylim(-1, orbits.size)
+    plt.ylabel('Orbit Number')
+    fig.autofmt_xdate()
+    plt.title('Acquisition Timeline')
     plt.savefig('timeline.pdf', bbox_inches='tight')

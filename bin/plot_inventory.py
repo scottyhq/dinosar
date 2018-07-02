@@ -8,7 +8,7 @@ Date: 10/2017
 
 import argparse
 import dinosar.archive.plot as plot
-
+from dinosar.archive.asf import load_inventory
 
 def cmdLineParse():
     """Command line parser."""
@@ -25,11 +25,12 @@ def main(parser):
     """Run as a script with args coming from argparse."""
     print('Generating map and timeline plots...')
     args = parser.parse_args()
-    gf = plot.load_inventory(args.input)
+    gf = load_inventory(args.input)
     w, s, e, n = gf.geometry.cascaded_union.bounds
     snwe = [s, n, w, e]
+    plat1, plat2 = gf.platform.unique()
     plot.plot_map(gf, snwe, args.polygon)
-    plot.plot_timeline(gf)
+    plot.plot_timeline(gf, plat1, plat2)
     print('Saved map.pdf and timeline.pdf figures')
 
 

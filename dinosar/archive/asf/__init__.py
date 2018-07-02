@@ -24,6 +24,7 @@ import geopandas as gpd
 import os
 import subprocess
 import sys
+from lxml import html
 
 
 def load_asf_json(jsonfile: str):
@@ -197,6 +198,34 @@ def save_inventory(gf, outname='query.geojson', format='GeoJSON'):
     print('Saved inventory: ', outname)
 
 
+def load_inventory(inventoryJSON):
+    """Load inventory saved with asf.archive.save_inventory().
+
+    Parameters
+    ----------
+    inventoryJSON : str
+        dinsar inventory file (query.geojson)
+
+    Returns
+    -------
+    gf :  GeoDataFrame
+        A geopandas GeoDataFrame
+
+    """
+    gf = gpd.read_file(inventoryJSON)
+    gf['timeStamp'] = gpd.pd.to_datetime(gf.sceneDate,
+                                         format='%Y-%m-%d %H:%M:%S')
+    gf['sceneDateString'] = gf.timeStamp.apply(
+        lambda x: x.strftime('%Y-%m-%d'))
+    gf['dateStamp'] = gpd.pd.to_datetime(gf.sceneDateString)
+    gf['utc'] = gf.timeStamp.apply(lambda x: x.strftime('%H:%M:%S'))
+    gf['relativeOrbit'] = gf.relativeOrbit.astype('int')
+    gf.sort_values('relativeOrbit', inplace=True)
+    gf['orbitCode'] = gf.relativeOrbit.astype('category').cat.codes
+
+    return gf
+
+
 def download_scene(downloadUrl):
     """Download a granule from ASF.
 
@@ -223,7 +252,7 @@ def download_scene(downloadUrl):
         print("Execution failed:", e, file=sys.stderr)
 
 
-def query_asf(snwe, sat='S1A', format='json'):
+def query_asf(snwe, sat='SA', format='json'):
     """Search ASF with [south, north, west, east] bounds.
 
     Saves result to local file: query_{sat}.{format}
@@ -248,7 +277,7 @@ def query_asf(snwe, sat='S1A', format='json'):
     slaveStart/slaveEnd
 
     """
-    print(f'Querying ASF Vertex for Sentinel-{sat}...')
+    print(f'Querying ASF Vertex for {sat}...')
     miny, maxy, minx, maxx = snwe
     roi = shapely.geometry.box(minx, miny, maxx, maxy)
     polygonWKT = roi.to_wkt()
@@ -267,6 +296,87 @@ def query_asf(snwe, sat='S1A', format='json'):
     # df = pd.DataFrame(r.json()[0])
     with open(f'query_{sat}.{format}', 'w') as j:
         j.write(r.text)
+
+
+def get_orbit_url(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+    """Retrieve precise orbit file for a specific Sentinel-1 granule.
+
+    Precise orbits available ~3 weeks after aquisition.
+
+    Parameters
+    ----------
+    granuleName : str
+        ASF granule name (e.g. S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA)
+    url : str
+        website with simple list of orbit file links
+
+    Returns
+    -------
+    orbitUrl :  str
+        url pointing to matched orbit file
+
+    """
+    sat = granuleName[:3]
+    date = granuleName[17:25]
+    print(f'downloading orbit for {sat}, {date}')
+    r = requests.get(url)
+    webpage = html.fromstring(r.content)
+    orbits = webpage.xpath('//a/@href')
+    df = gpd.pd.DataFrame(dict(orbit=orbits))
+    dfSat = df[df.orbit.str.startswith(sat)].copy()
+    dayBefore = gpd.pd.to_datetime(date) - gpd.pd.to_timedelta(1, unit='d')
+    dayBeforeStr = dayBefore.strftime('%Y%m%d')
+    dfSat.loc[:, 'startTime'] = dfSat.orbit.str[42:50]
+    match = dfSat.loc[dfSat.startTime == dayBeforeStr, 'orbit'].values[0]
+    orbitUrl = f'{url}/{match}'
+
+    return orbitUrl
+
+
+def get_slc_urls(gf, dateStr, relativeOrbit):
+    """Get S1 frame downloadUrls for a given date and relative orbit.
+
+    Parameters
+    ----------
+    gf : GeoDataFrame
+        ASF inventory of S1 frames
+    datStr : str
+        date in string format (e.g. '2018/11/30')
+    relativeOrbit : str
+        relative orbit in string format (e.g. '136')
+
+    Returns
+    -------
+    filenames :  list
+        list of matching download url strings
+
+    """
+    try:
+        GF = gf.query('relativeOrbit == @relativeOrbit')
+        GF = GF.loc[GF.dateStamp == dateStr]
+        filenames = GF.downloadUrl.tolist()
+    except Exception as e:
+        print('ERROR retrieving scenes, double check dates!')
+        print(e)
+        pass
+
+    return filenames
+
+
+def write_wget_download_file(fileList):
+    """Write list of frame urls to a file.
+
+    This is useful if you are running isce on a server and want to keep a
+    record of download links. Writes download-links.txt to current folder.
+
+    Parameters
+    ----------
+    fileList : list
+        list of download url strings
+
+    """
+    with open('download-links.txt', 'w') as f:
+        f.write("\n".join(fileList))
 
 
 def ogr2snwe(vectorFile, buffer=None):

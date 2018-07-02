@@ -42,19 +42,19 @@ def main(parser):
         sys.exit(1)
 
     if args.input:
-        asf.ogr2snwe(args.input, args.buffer)
+        args.roi = asf.ogr2snwe(args.input, args.buffer)
 
     asf.snwe2file(args.roi)
-    asf.query_asf(args.roi, '1A')
-    asf.query_asf(args.roi, '1B')
-    gf = asf.merge_inventories('query_S1A.json', 'query_S1B.json')
+    asf.query_asf(args.roi, 'SA')
+    asf.query_asf(args.roi, 'SB')
+    gf = asf.merge_inventories('query_SA.json', 'query_SB.json')
     asf.summarize_inventory(gf)
     asf.summarize_orbits(gf)
     asf.save_inventory(gf)
     if args.csvs:
-        asf.query_asf(args.roi, '1A', 'csv')
+        asf.query_asf(args.roi, 'SA', 'csv')
     if args.kmls:
-        asf.query_asf(args.roi, '1A', 'kml')
+        asf.query_asf(args.roi, 'SA', 'kml')
     if args.footprints:
         asf.save_geojson_footprints(gf)
 

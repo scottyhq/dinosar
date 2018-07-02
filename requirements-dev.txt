@@ -3,5 +3,6 @@ sphinx>=1.7.5
 flake8>=3.5.0
 jedi>=0.12.0
 pytest>=3.6.0
+pytest-cov>=2.5.1
 twine>=1.11.0
 setuptools>=39.2.0
