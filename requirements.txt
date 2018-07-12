@@ -1,7 +1,7 @@
 requests>=2.18
 pandas>=0.23
 geopandas>=0.3
-#lxml>=4.2
+lxml>=4.2
 yaml>=0.1.7
 #matplotlib>=2.2
 #Cython>=0.15

@@ -30,7 +30,7 @@ def make_rgb(infile, cptfile, outfile):
     # outfile = infile[:-4] + '-rgb.tif'
     cmd = f'gdaldem color-relief -alpha {infile} {cptfile} {outfile}'
     print(cmd)
-    subprocess.call(cmd)
+    subprocess.call(cmd, shell=True)
 
 
 def make_thumbnails(infile, small=5, large=10):
@@ -49,11 +49,11 @@ def make_thumbnails(infile, small=5, large=10):
     outfile = infile[:-4] + '-thumb-large.png'
     cmd = f'gdal_translate -of PNG -r cubic -outsize {large}% 0 {infile} {outfile}'
     print(cmd)
-    subprocess.call(cmd)
+    subprocess.call(cmd, shell=True)
     outfile = infile[:-4] + '-thumb-small.png'
     cmd = f'gdal_translate -of PNG -r cubic -outsize {small}% 0 {infile} {outfile}'
     print(cmd)
-    subprocess.call(cmd)
+    subprocess.call(cmd, shell=True)
 
 
 def make_leaflet_tiles(infile):
@@ -69,7 +69,7 @@ def make_leaflet_tiles(infile):
     """
     cmd = f'gdal2tiles.py -w leaflet -z 6-12 {infile}'
     print(cmd)
-    subprocess.call(cmd)
+    subprocess.call(cmd, shell=True)
 
 
 def extract_band(infile, band, outfile):
@@ -85,7 +85,7 @@ def extract_band(infile, band, outfile):
     """
     cmd = f'gdal_translate -of VRT -b {band} -a_nodata 0.0 {infile} {outfile}'
     print(cmd)
-    subprocess.call(cmd)
+    subprocess.call(cmd, shell=True)
 
 
 def make_overviews(infile):
@@ -94,9 +94,9 @@ def make_overviews(infile):
     Currently, gdal script gdaladdo is called to do this.
 
     """
-    cmd = 'gdaladdo {infile} 2 4 8 16 32'
+    cmd = f'gdaladdo {infile} 2 4 8 16 32'
     print(cmd)
-    subprocess.call(cmd)
+    subprocess.call(cmd, shell=True)
 
 
 def make_cog(infile, outfile):
@@ -107,9 +107,9 @@ def make_cog(infile, outfile):
     """
     cmd = f'gdal_translate {infile} {outfile} -co COMPRESS=DEFLATE \
 -co TILED=YES -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
--co COPY_SRC_OVERVIEWS=YES  --config GDAL_TIFF_OVR_BLOCKSIZE 512'
+-co COPY_SRC_OVERVIEWS=YES --config GDAL_TIFF_OVR_BLOCKSIZE 512'
     print(cmd)
-    subprocess.call(cmd)
+    subprocess.call(cmd, shell=True)
 
 
 def cleanUp():
@@ -117,7 +117,7 @@ def cleanUp():
     print('removing temporary files...')
     cmd = 'rm tmp* *aux.xml'
     print(cmd)
-    subprocess.call(cmd)
+    subprocess.call(cmd, shell=True)
 
 
 def writeIndex(intname):

@@ -91,7 +91,9 @@ def summarize_orbits(gf):
         DF['nFrames'] = nFrames.values
         DF.drop('dateStamp', axis=1, inplace=True)
         # DF.set_index('date') # convert to datetime difference
-        DF.to_csv('acquisitions_{}.csv'.format(orb))
+        outFile = 'acquisitions_{}.csv'.format(orb)
+        print(f'Saving {outFile} ...')
+        DF.to_csv(outFile)
 
 
 def save_geojson_footprints(gf):
