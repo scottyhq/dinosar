@@ -23,9 +23,45 @@ import pandas as pd
 import geopandas as gpd
 import os
 import subprocess
+import shutil
 import sys
 from lxml import html
 
+
+def run_bash_command(cmd):
+    """Call a system command through the subprocess python module."""
+    print(cmd)
+    try:
+        retcode = subprocess.call(cmd, shell=True)
+        if retcode < 0:
+            print("Child was terminated by signal", -retcode, file=sys.stderr)
+        else:
+            print("Child returned", retcode, file=sys.stderr)
+    except OSError as e:
+        print("Execution failed:", e, file=sys.stderr)
+
+
+def inventory2s3(gf, s3bucket):
+    """Mirror Sentinel1 inventory for specific path on S3.
+
+    Assumes geodataframe has already been filtered for desired frames.
+    """
+    filenames = gf.downloadUrl.tolist()
+    write_wget_download_file(filenames)
+
+    nasauser = os.environ['NASAUSER']
+    nasapass = os.environ['NASAPASS']
+    os.mkdir('tmp')
+    os.chdir('tmp')
+    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} --input-file=download-links.txt'
+    # NOTE: don't print this command since it contains password info.
+    run_bash_command(cmd)
+
+    cmd = f'aws s3 sync . s3://{s3bucket}'
+    run_bash_command(cmd)
+    os.chdir('tmp')
+    shutil.rmtree('tmp')
+    
 
 def load_asf_json(jsonfile: str):
     """Convert JSON metadata from ASF query to dataframe.
@@ -241,17 +277,7 @@ def download_scene(downloadUrl):
     """
     print('Requires ~/.netrc file')
     cmd = 'wget -nc -c {downloadUrl}'
-    print(cmd)
-    # recommended way to launch external program
-    # https://docs.python.org/3.6/library/subprocess.html#subprocess-replacements
-    try:
-        retcode = subprocess.call(cmd)
-        if retcode < 0:
-            print("Child was terminated by signal", -retcode, file=sys.stderr)
-        else:
-            print("Child returned", retcode, file=sys.stderr)
-    except OSError as e:
-        print("Execution failed:", e, file=sys.stderr)
+    run_bash_command(cmd)
 
 
 def query_asf(snwe, sat='SA', format='json'):

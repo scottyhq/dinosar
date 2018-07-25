@@ -6,6 +6,7 @@ import sys
 
 def run_bash_command(cmd):
     """Call a system command through the subprocess python module."""
+    print(cmd)
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
@@ -17,7 +18,7 @@ def run_bash_command(cmd):
 
 
 def make_rgb(infile, cptfile, outfile):
-    """Create color-mapped RGBA Geotiff file.
+    """Create color-mapped RGB Geotiff file.
 
     Parameters
     ----------
@@ -28,32 +29,29 @@ def make_rgb(infile, cptfile, outfile):
 
     """
     # outfile = infile[:-4] + '-rgb.tif'
-    cmd = f'gdaldem color-relief -alpha {infile} {cptfile} {outfile}'
-    print(cmd)
-    subprocess.call(cmd, shell=True)
+    # -alpha
+    cmd = f'gdaldem color-relief {infile} {cptfile} {outfile}'
+    run_bash_command(cmd)
 
 
-def make_thumbnails(infile, small=5, large=10):
-    """Make a large and small png overview image.
+def make_thumbnail(infile, percent=5, format='JPEG'):
+    """Make a JPEG or PNG thumbnail - percent of full-size image.
 
     Parameters
     ----------
     infile : str
         single-band raster file recognized by GDAL
-    small : int
+    percent : int
         percentage of orginal raster size for smaller thumbnail
-    large : float
-        percentage of original raster size for larger thumbnail
+    format : str
+        output format (JPEG or PNG)
 
     """
-    outfile = infile[:-4] + '-thumb-large.png'
-    cmd = f'gdal_translate -of PNG -r cubic -outsize {large}% 0 {infile} {outfile}'
-    print(cmd)
-    subprocess.call(cmd, shell=True)
-    outfile = infile[:-4] + '-thumb-small.png'
-    cmd = f'gdal_translate -of PNG -r cubic -outsize {small}% 0 {infile} {outfile}'
-    print(cmd)
-    subprocess.call(cmd, shell=True)
+    suffix = format.lower()
+    outfile = infile[:-4] + f'-thumb.{suffix}'
+    cmd = f'gdal_translate -of {format} -r cubic -outsize \
+            {percent}% 0 {infile} {outfile}'
+    run_bash_command(cmd)
 
 
 def make_leaflet_tiles(infile):
@@ -68,8 +66,7 @@ def make_leaflet_tiles(infile):
 
     """
     cmd = f'gdal2tiles.py -w leaflet -z 6-12 {infile}'
-    print(cmd)
-    subprocess.call(cmd, shell=True)
+    run_bash_command(cmd)
 
 
 def extract_band(infile, band, outfile):
@@ -84,8 +81,7 @@ def extract_band(infile, band, outfile):
 
     """
     cmd = f'gdal_translate -of VRT -b {band} -a_nodata 0.0 {infile} {outfile}'
-    print(cmd)
-    subprocess.call(cmd, shell=True)
+    run_bash_command(cmd)
 
 
 def make_overviews(infile):
@@ -95,8 +91,7 @@ def make_overviews(infile):
 
     """
     cmd = f'gdaladdo {infile} 2 4 8 16 32'
-    print(cmd)
-    subprocess.call(cmd, shell=True)
+    run_bash_command(cmd)
 
 
 def make_cog(infile, outfile):
@@ -108,16 +103,14 @@ def make_cog(infile, outfile):
     cmd = f'gdal_translate {infile} {outfile} -co COMPRESS=DEFLATE \
 -co TILED=YES -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
 -co COPY_SRC_OVERVIEWS=YES --config GDAL_TIFF_OVR_BLOCKSIZE 512'
-    print(cmd)
-    subprocess.call(cmd, shell=True)
+    run_bash_command(cmd)
 
 
 def cleanUp():
     """Remove intermediate and auxiliary files."""
     print('removing temporary files...')
     cmd = 'rm tmp* *aux.xml'
-    print(cmd)
-    subprocess.call(cmd, shell=True)
+    run_bash_command(cmd)
 
 
 def writeIndex(intname):
@@ -134,11 +127,11 @@ def writeIndex(intname):
 <body>
 <h1>{intname}</h1>
 
-<a href="amplitude-cog-rgb-thumb-large.png">
-  <img src="amplitude-cog-rgb-thumb-small.png">
+<a href="amplitude-cog-rgb-thumb.png">
+  <img src="amplitude-cog-rgb-thumb.png">
 </a>
-<a href="unwrapped-phase-cog-rgb-thumb-large.png">
-  <img src="unwrapped-phase-cog-rgb-thumb-small.png">
+<a href="unwrapped-phase-cog-rgb-thumb.png">
+  <img src="unwrapped-phase-cog-rgb-thumb.png">
 </a>
 
 <h2>Leaflet Slippy Map Links</h2>

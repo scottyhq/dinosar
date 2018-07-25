@@ -16,7 +16,13 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import numpy as np
+import yaml
 
+
+def read_topsApp_yaml():
+    """Read yaml rile."""
+    with open('topsApp-defaults.yml', 'w') as outfile:
+        defaultDict = yaml.load(outfile)
 
 def read_topsApp_xml(xmlFile):
     """Write topsApp.py control file.
@@ -34,11 +40,8 @@ def read_topsApp_xml(xmlFile):
     """
     x = etree.parse(xmlFile)
     xmlString = etree.tostring(x, pretty_print=True, encoding="unicode")
+
     return xmlString
-
-
-def create_topsApp_xml(inputDict):
-    c = etree.Element("thisdoesntmatter")
 
 
 def write_topsApp_xml(inputDict):

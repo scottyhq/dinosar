@@ -9,7 +9,7 @@ and use emerging tools for rendering (see STAC spec on github)
 """
 import argparse
 import dinosar.output as dout
-
+import dinosar.isce as dice
 
 def cmdLineParse():
     """Command line parser."""
@@ -18,16 +18,16 @@ def cmdLineParse():
                         help='input image file')
     parser.add_argument('-b', type=int, dest='band', default=1, required=False,
                         help='specify band from input image')
-    parser.add_argument('-c', type=str, dest='cptFile', required=False,
-                        help='cpt colormap')
     parser.add_argument('-o', type=str, dest='outFile', required=False,
                         help='output file')
     # parser.add_argument('-h', action='store_true', default=False, dest='html',
     #                    required=False, help='create HTML index')
+    parser.add_argument('-c', action='store_true', default=False, dest='cpt',
+                        required=False, help='create colored RGB images')
     parser.add_argument('-t', action='store_true', default=False, dest='tiles',
                         required=False, help='Create image tiles for leaflet')
-    parser.add_argument('-n', action='store_true', default=False, dest='nails',
-                        required=False, help='Create image thumbnails')
+    parser.add_argument('-n', action='store_true', default=False, dest='nail',
+                        required=False, help='Create image thumbnail')
 
     return parser
 
@@ -47,21 +47,21 @@ def main(parser):
     dout.make_overviews('tmp.vrt')
     dout.make_cog('tmp.vrt', args.outFile)
 
-    if not args.cptFile:
-        print('No CPT file provided, so skipping RGB creation')
+    if not args.cpt:
+        print('Skipping RGB image creation')
     else:
+        print(f'Creating RGB file {rgbFile}')
         rgbFile = args.outFile[:-4] + '-rgb.tif'
-        msg = f'Creating RGB file {rgbFile}'
-        print(msg)
-        dout.make_rgb(args.outFile, args.cptFile, 'tmp.tif')
+        cpt = dice.make_cmap(args.inFile)
+        dout.make_rgb(args.outFile, cpt, 'tmp.tif')
         dout.make_overviews('tmp.tif')
         dout.make_cog('tmp.tif', rgbFile)
 
         # Thumbnails and tiles only work well with colorized geotif
-        if args.nails:
-            dout.make_thumbnails(args.outFile)
-        if args.tiles:
-            dout.make_leaflet_tiles(args.outFile)
+        if args.nail:
+            dout.make_thumbnail(args.rgbFile)
+        # if args.tiles:
+        #    dout.make_leaflet_tiles(args.outFile)
 
     # Clean up temporary GDAL files
     dout.cleanUp()

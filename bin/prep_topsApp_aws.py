@@ -17,6 +17,7 @@ import argparse
 import os
 from dinosar.archive import asf
 import dinosar.isce as dice
+import dinosar.output as dout
 
 
 def cmdLineParse():
@@ -77,16 +78,15 @@ def main():
 
     dice.write_topsApp_xml(inps)
 
+    # NOTE: hopefully this changes to S3 storage soon
     asf.write_wget_download_file(downloadList)
 
     # TODO: change these to use boto3 (or at least subprocess)
     os.chdir('../')
     cmd = f'aws s3 mb s3://{intdir}'
-    print(cmd)
-    os.system(cmd)
+    dout.run_bash_command(cmd)
     cmd = f'aws s3 sync {intdir} s3://{intdir}'
-    print(cmd)
-    os.system(cmd)
+    dout.run_bash_command(cmd)
     print(f'Moved files to s3://{intdir}')
 
 

@@ -3,6 +3,7 @@ pandas>=0.23
 geopandas>=0.3
 lxml>=4.2
 yaml>=0.1.7
+rasterio>=1.0
 #matplotlib>=2.2
 #Cython>=0.15
 #cartopy>=0.16
