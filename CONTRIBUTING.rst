@@ -26,7 +26,8 @@ To release a new version, create a tag, checkout the tag as a local branch, push
     git tag 0.1.1 ; git push --tags
     git checkout tags/0.1.1 -b 0.1.1
     python3 setup.py sdist bdist_wheel
-    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    #twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    twine upload dist/*
 
 
 
