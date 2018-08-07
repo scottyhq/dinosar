@@ -2,5 +2,5 @@ requests>=2.18
 pandas>=0.23
 geopandas>=0.3
 lxml>=4.2
-yaml>=0.1
+pyyaml>=3.13
 rasterio>=1.0
