@@ -83,7 +83,8 @@ def write_cmap(outname, vals, scalarMap):
         fid.write('nv 0 0 0 0 \n')  # nodata alpha transparency
 
 
-def make_amplitude_cmap(mapname='gray', vmin=1, vmax=1e5, ncolors=64):
+def make_amplitude_cmap(mapname='gray', vmin=1, vmax=1e5, ncolors=64,
+                        outname='amplitude-cog.cpt'):
     """Write default colormap (amplitude-cog.cpt) for isce amplitude images.
 
     Uses a LogNorm colormap by default since amplitude return values typically
@@ -107,14 +108,13 @@ def make_amplitude_cmap(mapname='gray', vmin=1, vmax=1e5, ncolors=64):
     cNorm = colors.LogNorm(vmin=vmin, vmax=vmax)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cmap)
     vals = np.linspace(vmin, vmax, ncolors, endpoint=True)
-    outname = 'amplitude-cog.cpt'
     write_cmap(outname, vals, scalarMap)
 
     return outname
 
 
 def make_wrapped_phase_cmap(mapname='plasma', vmin=-50, vmax=50, ncolors=64,
-                            wrapRate=6.28):
+                            wrapRate=6.28, outname='unwrapped-phase-cog.cpt'):
     """Re-wrap unwrapped phase values and write 'unwrapped-phase-cog.cpt'.
 
     Each color cycle represents wavelength/2 line-of-sight change for
@@ -139,7 +139,7 @@ def make_wrapped_phase_cmap(mapname='plasma', vmin=-50, vmax=50, ncolors=64,
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cmap)
     vals = np.linspace(vmin, vmax, ncolors, endpoint=True)
     vals_wrapped = np.remainder(vals, wrapRate) / wrapRate
-    outname = 'unwrapped-phase-cog.cpt'
+
     with open(outname, 'w') as fid:
         for val, wval in zip(vals, vals_wrapped):
             cval = scalarMap.to_rgba(wval)
@@ -152,7 +152,8 @@ def make_wrapped_phase_cmap(mapname='plasma', vmin=-50, vmax=50, ncolors=64,
     return outname
 
 
-def make_coherence_cmap(mapname='inferno', vmin=1e-5, vmax=1, ncolors=64):
+def make_coherence_cmap(mapname='inferno', vmin=1e-5, vmax=1, ncolors=64,
+                        outname='coherence-cog.cpt'):
     """Write default colormap (coherence-cog.cpt) for isce coherence images.
 
     Parameters
@@ -171,7 +172,7 @@ def make_coherence_cmap(mapname='inferno', vmin=1e-5, vmax=1, ncolors=64):
     cNorm = colors.Normalize(vmin=vmin, vmax=vmax)
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cmap)
     vals = np.linspace(vmin, vmax, ncolors, endpoint=True)
-    outname = 'coherence-cog.cpt'
+
     write_cmap(outname, vals, scalarMap)
 
     return outname

@@ -60,7 +60,7 @@ def test_merge_inventory():
 
 def test_load_inventory():
     """Load GeoJSON into GeoDataFrame."""
-    gf = asf.load_asf_json('./tests/data/query.geojson')
+    gf = asf.load_inventory('./tests/data/query.geojson')
 
     assert type(gf) == gpd.geodataframe.GeoDataFrame
 
@@ -84,4 +84,4 @@ def test_get_slcs():
 
     assert type(urls) == list
     assert len(urls) == 1
-    assert urls[0] = 'https://datapool.asf.alaska.edu/SLC/SB/S1B_IW_SLC__1SDV_20180320T232821_20180320T232848_010121_01260A_0613.zip'
+    assert urls[0] == 'https://datapool.asf.alaska.edu/SLC/SB/S1B_IW_SLC__1SDV_20180320T232821_20180320T232848_010121_01260A_0613.zip'

@@ -1,6 +1,5 @@
-import dinosar.cloud.aws as aws
-# from dinosar.archive import asf
-import os.path
+"""Tests for AWS Batch functionality """
+import dinosar.cloud.aws as daws
 
 
 def test_aws_config():
