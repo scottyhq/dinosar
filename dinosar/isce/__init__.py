@@ -8,10 +8,11 @@ functions borrow from example applications distributed with ISCE.
 
 """
 
-from lxml import objectify, etree
-import os
+# from lxml import objectify, etree
+# import os
 # import matplotlib
-# matplotlib.use("Agg") # Necessary for some systems
+# matplotlib.use("Agg") # Necessary for basic OS (e.g. minimal docker images)
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
@@ -19,50 +20,44 @@ import numpy as np
 import yaml
 
 
-def read_topsApp_yaml():
-    """Read yaml rile."""
-    with open('topsApp-defaults.yml', 'w') as outfile:
-        defaultDict = yaml.load(outfile)
+def read_yaml_template(template='topsApp-template.yml'):
+    """Read yaml file."""
+    with open(template, 'r') as outfile:
+        defaults = yaml.load(outfile)
 
-def read_topsApp_xml(xmlFile):
-    """Write topsApp.py control file.
-
-    Parameters
-    ----------
-    xmlPath : str
-        path to xmlFile
-
-    Returns
-    -------
-    xmlString : str
-        XML as a formatted string
-
-    """
-    x = etree.parse(xmlFile)
-    xmlString = etree.tostring(x, pretty_print=True, encoding="unicode")
-
-    return xmlString
+    return defaults
 
 
-def write_topsApp_xml(inputDict):
-    """Write topsApp.py control file.
+def dict2xml(dictionary, root='topsApp', topcomp='topsinsar'):
+    """Convert simple dictionary to XML for ISCE."""
+    def add_property(property, value):
+        xml = f"        <property name={property}>{value}</property>\n"
+        return xml
 
-    This function creates topsApp.xml given a dictionary of parameters and
-    settings.
+    def add_component(name, properties):
+        xml = f"    <component name={name}>\n"
+        for prop, val in properties.items():
+            xml += add_property(prop, val)
+        xml += f"    </component>\n"
+        return xml
 
-    Parameters
-    ----------
-    inputDict : dict
-        dictionary of input settings
+    dictionary = dictionary[topcomp]
+    xml = f'<{root}>\n   <{topcomp}>\n'
+    for key, val in dictionary.items():
+        if isinstance(val, dict):
+            xml += add_component(key, val)
+        else:
+            xml += add_property(key, val)
 
-    """
-    print('Writing topsApp.xml with the following configuration:')
-    print(inputDict)
-    xmlString = read_topsApp_xml("topsApp-template.xml")
-    with open('topsApp.xml', 'w') as outfile:
-        print(etree.tostring(xmlString.format(**inputDict),
-                             pretty_print=True,
-                             encoding="unicode"), file=outfile)
+    xml += f'    </{topcomp}>\n</{root}>\n'
+
+    return xml
+
+
+def write_xml(xml, outname='topsApp.xml'):
+    """Write xml string to a file."""
+    with open(outname, 'w') as f:
+        f.write(xml)
 
 
 def write_cmap(outname, vals, scalarMap):
@@ -184,11 +179,14 @@ def make_coherence_cmap(mapname='inferno', vmin=1e-5, vmax=1, ncolors=64):
 
 def make_cmap(infile):
     """Call correct cmap function depending on file."""
-    if infile == 'coherence-cog.tif':
+    cornames = ['phsig.cor.geo.vrt', 'topophase.cor.geo.vrt']
+    phsnames = ['filt_topophase.unw.geo.vrt']
+
+    if infile in cornames:
         cpt = make_coherence_cmap()
-    elif infile == 'amplitude-cog.tif':
-        cpt = make_amplitude_cmap()
-    elif infile == 'unwrapped-phase-cog.tif':
+    elif infile in phsnames:
         cpt = make_wrapped_phase_cmap()
+    else: #amplitude cmap
+        cpt = make_amplitude_cmap()
 
     return cpt

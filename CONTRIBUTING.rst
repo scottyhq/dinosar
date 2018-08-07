@@ -1,7 +1,7 @@
 Code Conventions
 ----------------
 
-*dinosar* is setup to work with Python 3.
+*dinosar* is designed to work with Python >3.6
 
 Code should adhere to PEP8_.
 
@@ -19,9 +19,9 @@ Tests are mandatory for new features. We use Pytest_.
 Updating Version
 ----------------
 
-Version managment is done with versioneer_
+Version management is done with versioneer_
 
-To relase a new version, create a tag, checkout the tag as a local branch, push to PYPI::
+To release a new version, create a tag, checkout the tag as a local branch, push to PYPI::
 
     git tag 0.1.1 ; git push --tags
     git checkout tags/0.1.1 -b 0.1.1

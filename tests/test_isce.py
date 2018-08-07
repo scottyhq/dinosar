@@ -3,21 +3,41 @@ import dinosar.isce as dice
 import os.path
 
 
+def test_read_yml_template():
+    """Read a yaml file into python ordered dictionary."""
+    inputDict = dice.read_yaml_template('./data/topsApp-template-uniongap.yml')
+
+    assert isinstance(inputDict, dict)
+    assert inputDict['topsinsar']['azimuthlooks'] == 7
+
+
 def test_write_topsApp_xml():
-    """Make sure directory is create with ncessary and valid files."""
-    inputDict = {'common': {'poeorb': True,
-                            'roi': [0.61, 1.04, -78.19, -77.52]}
-                 'master': {}
-                 'master_scenes': ['scene1.zip', 'scene2.zip'],
-                 'slave_scenes': ['scene3.zip', 'scene4.zip'],
-                 'dem': 'elevation.dem',
-                 'gbox': [0.63, 1.08, -78.25, -77.50],
-                 'swaths': [1, 2]}
-    dice.write_topsApp_xml(inputDict)
+    """Make sure directory is created with necessary and valid files."""
+    testDict = {'topsinsar': {'azimuthlooks': 7,
+                              'filterstrength': 0.5,
+                              'master': {'safe': 's1a.zip'},
+                              'slave': {'safe': 's1b.zip'}
+                              }
+                }
+    xml = dice.dict2xml(testDict)
+    dice.write_xml(xml)
 
     assert os.path.exists('topsApp.xml')
 
 
+def test_create_cmaps():
+    """Create .cpt files from matplotlib colormaps."""
+    dice.make_cmap('phsig.cor.geo.vrt')
+    assert os.path.exists('coherence-cog.cpt')
+
+    dice.make_cmap('filt_topophase.unw.geo.vrt')
+    assert os.path.exists('unwrapped-phase-cog.cpt')
+
+    dice.make_cmap()
+    assert os.path.exists('amplitude-cog.cpt')
+
+
+'''
 def test_isce2cog(url):
     """Convert isce geocoded output to cloud optimized geotiff (COG)."""
     dice.make_cog()
@@ -25,13 +45,4 @@ def test_isce2cog(url):
     # dice.make_thumbnails()
     # curl -s "http://cog-validate.radiant.earth/api/validate?url=http://path/to/my.tif"
     assert os.path.exists('coherence-cog.tif')
-
-def test_create_cmaps():
-    """Create .cpt files from matplotlib colormaps."""
-    dice.make_coherence_cmap()
-    dice.make_amplitude_cmap()
-    dice.make_wrapped_phase_cmap()
-
-    assert os.path.exists('amplitude-cog.cpt')
-    assert os.path.exists('unwrapped-phase-cog.cpt')
-    assert os.path.exists('coherence-cog.cpt')
+'''

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Create Cloud-Optimized Geotiff ISCE output and push to S3.
 
-Usage: isce2aws.py -i topophase.cor.geo.vrt -c coherence-cog.cpt
+Usage:
+isce2cog.py -i topophase.cor.geo.vrt -b 2 -c -n
+isce2cog.py -i filt_topophase.unw.geo.vrt -b 2 -c -n
 
 NOTES: instead of pre-rendering TILES and RGB files, just save original COGs
 and use emerging tools for rendering (see STAC spec on github)
@@ -50,8 +52,8 @@ def main(parser):
     if not args.cpt:
         print('Skipping RGB image creation')
     else:
-        print(f'Creating RGB file {rgbFile}')
         rgbFile = args.outFile[:-4] + '-rgb.tif'
+        print(f'Creating RGB file {rgbFile}')
         cpt = dice.make_cmap(args.inFile)
         dout.make_rgb(args.outFile, cpt, 'tmp.tif')
         dout.make_overviews('tmp.tif')
@@ -59,7 +61,7 @@ def main(parser):
 
         # Thumbnails and tiles only work well with colorized geotif
         if args.nail:
-            dout.make_thumbnail(args.rgbFile)
+            dout.make_thumbnail(rgbFile)
         # if args.tiles:
         #    dout.make_leaflet_tiles(args.outFile)
 

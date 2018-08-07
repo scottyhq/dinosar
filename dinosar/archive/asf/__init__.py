@@ -61,7 +61,7 @@ def inventory2s3(gf, s3bucket):
     run_bash_command(cmd)
     os.chdir('tmp')
     shutil.rmtree('tmp')
-    
+
 
 def load_asf_json(jsonfile: str):
     """Convert JSON metadata from ASF query to dataframe.
@@ -268,6 +268,7 @@ def download_scene(downloadUrl):
     """Download a granule from ASF.
 
     Launches an external `wget` command to download a single granule from ASF.
+    Note that if stored on S3, in us-east-1 region.
 
     Parameters
     ----------
