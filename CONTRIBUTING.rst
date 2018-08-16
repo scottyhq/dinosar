@@ -21,14 +21,6 @@ Updating Version
 
 Version management is done with versioneer_
 
-To release a new version, create a tag, checkout the tag as a local branch, push to PYPI::
-
-    git tag 0.1.1 ; git push --tags
-    git checkout tags/0.1.1 -b 0.1.1
-    python3 setup.py sdist bdist_wheel
-    #twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-    twine upload dist/*
-
-
+To release a new version run `./make_release.sh 0.1.1`
 
 .. _versioneer: https://github.com/warner/python-versioneer/
