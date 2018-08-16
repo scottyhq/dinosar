@@ -1,14 +1,7 @@
 """Functions for querying ASF archive.
 
-This module has utilities for querying the NASA Alaska Satellite Facility
-Distributed Active Archive Center (`ASF DAAC`_). Designed to easily search for
-Sentinel-1 SAR scenes load associated JSON metadata into a Geopandas Dataframe.
-
-Notes
------
-This file contains library functions. To run as a script use::
-
-    $ get_inventory_asf.py --help
+This module has utilities for interacting with the Alaska Satellite Facility
+NASA Distributed Active Archive Center (`ASF DAAC`_).
 
 .. _ASF DAAC:
    https://www.asf.alaska.edu/get-data/api/

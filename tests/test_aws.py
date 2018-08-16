@@ -1,4 +1,9 @@
-"""Tests for AWS Batch functionality """
+"""Tests for AWS Batch functionality.
+
+For inspiration:
+https://github.com/mapbox/rasterio/blob/master/cloudformation/travis.template
+https://github.com/mapbox/rasterio/blob/c3b2499487d75803d1f73efb653f8698eaadb176/tests/test_env.py 
+"""
 import dinosar.cloud.aws as daws
 
 

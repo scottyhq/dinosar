@@ -1,13 +1,14 @@
+"""Tests for querying ASF archive."""
 from dinosar.archive import asf
 
 import requests
-import os.path
+import os
 import geopandas as gpd
 
 
 def test_extract_bounds():
     """Extract SNWE bounds from a OGR-recognized vector file."""
-    bounds = asf.ogr2snwe('./tests/data/UnionGap.shp')
+    bounds = asf.ogr2snwe('tests/data/UnionGap.shp')
 
     assert type(bounds) == list
     assert len(bounds) == 4
@@ -34,39 +35,43 @@ def test_get_list():
 
 def test_load_json():
     """Load GeoJSON into GeoDataFrame."""
-    gf = asf.load_asf_json('./tests/data/query_S1A.json')
+    gf = asf.load_asf_json('tests/data/query_S1A.json')
 
     assert type(gf) == gpd.geodataframe.GeoDataFrame
 
 
-def test_get_inventory():
+def test_get_inventory(tmpdir):
     """Default region of interest query should work."""
-    os.chdir('./tests/tmp')
+    pwd = os.getcwd()
+    os.chdir(tmpdir)
     asf.query_asf([0.611, 1.048, -78.196, -77.522], 'S1A')
     asf.query_asf([0.611, 1.048, -78.196, -77.522], 'S1B')
-    os.chdir('../../')
+    os.chdir(pwd)
 
-    assert os.path.isfile('./tests/data/query_S1A.json')
-    assert os.path.isfile('./tests/data/query_S1B.json')
+    s1ajson = tmpdir.join('query_S1A.json')
+    s1bjson = tmpdir.join('query_S1B.json')
+
+    assert os.path.isfile(s1ajson)
+    assert os.path.isfile(s1bjson)
 
 
 def test_merge_inventory():
     """Merge S1A and S1B inventories."""
-    gf = asf.merge_inventories('./tests/data/query_S1A.json',
-                               './tests/data/query_S1A.json')
+    gf = asf.merge_inventories('tests/data/query_S1A.json',
+                               'tests/data/query_S1B.json')
 
     assert type(gf) == gpd.geodataframe.GeoDataFrame
 
 
 def test_load_inventory():
     """Load GeoJSON into GeoDataFrame."""
-    gf = asf.load_inventory('./tests/data/query.geojson')
+    gf = asf.load_inventory('tests/data/query.geojson')
 
     assert type(gf) == gpd.geodataframe.GeoDataFrame
 
 
 def test_get_orbit_url():
-    """Get URL of precise orbit for a given granule """
+    """Get URL of precise orbit for a given granule."""
     granule = 'S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA'
     url = asf.get_orbit_url(granule)
 
@@ -76,10 +81,10 @@ def test_get_orbit_url():
 
 
 def test_get_slcs():
-    """Retrieve SLCs from geopandas inventory"""
+    """Retrieve SLCs from geopandas inventory."""
     acquisition_date = '20180320'
     path = 120
-    gf = asf.load_inventory('./tests/data/query.geojson')
+    gf = asf.load_inventory('tests/data/query.geojson')
     urls = asf.get_slc_urls(gf, acquisition_date, path)
 
     assert type(urls) == list

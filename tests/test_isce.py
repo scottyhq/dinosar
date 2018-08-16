@@ -14,7 +14,7 @@ def test_read_yml_template():
     assert inputDict['topsinsar']['master']['polarization'] == 'vv'
 
 
-def test_write_topsApp_xml():
+def test_write_topsApp_xml(tmpdir):
     """Make sure directory is created with necessary and valid files."""
     testDict = {'topsinsar': {'azimuthlooks': 7,
                               'filterstrength': 0.5,
@@ -23,22 +23,22 @@ def test_write_topsApp_xml():
                               }
                 }
     xml = dice.dict2xml(testDict)
-    outfile = './tests/tmp/topsApp.xml'
+    outfile = tmpdir.join('topsApp.xml')
     dice.write_xml(xml, outfile)
 
     assert os.path.exists(outfile)
 
 
-def test_create_cmaps():
+def test_create_cmaps(tmpdir):
     """Create .cpt files from matplotlib colormaps."""
-    outname = './tests/tmp/coherence-cog.cpt'
+    outname = tmpdir.join('coherence-cog.cpt')
     cpt = dice.make_coherence_cmap(outname=outname)
     assert os.path.exists(cpt)
 
-    outname = './tests/tmp/unwrapped-cog.cpt'
+    outname = tmpdir.join('unwrapped-cog.cpt')
     cpt = dice.make_wrapped_phase_cmap(outname=outname)
     assert os.path.exists(cpt)
 
-    outname = './tests/tmp/amplitude-cog.cpt'
+    outname = tmpdir.join('amplitude-cog.cpt')
     cpt = dice.make_amplitude_cmap(outname=outname)
     assert os.path.exists(cpt)
