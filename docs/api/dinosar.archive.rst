@@ -1,19 +1,18 @@
-dinosar package
-===============
+dinosar.archive package
+=======================
 
 Subpackages
 -----------
 
 .. toctree::
 
-    dinosar.archive
-    dinosar.cloud
-    dinosar.isce
+    dinosar.archive.asf
+    dinosar.archive.plot
 
 Module contents
 ---------------
 
-.. automodule:: dinosar
+.. automodule:: dinosar.archive
     :members:
     :undoc-members:
     :show-inheritance:

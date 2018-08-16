@@ -6,6 +6,7 @@ echo 'Creating release version $VERSION'
 
 # remake documentation with sphinx
 cd docs
+sphinx-apidoc -o api/ ../dinosar
 make html
 cd ..
 

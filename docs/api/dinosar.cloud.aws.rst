@@ -1,10 +1,10 @@
-dinosar.cloud package
-=====================
+dinosar.cloud.aws package
+=========================
 
 Module contents
 ---------------
 
-.. automodule:: dinosar.cloud
+.. automodule:: dinosar.cloud.aws
     :members:
     :undoc-members:
     :show-inheritance:

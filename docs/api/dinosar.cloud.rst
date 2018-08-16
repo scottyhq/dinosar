@@ -1,17 +1,17 @@
-dinosar.archive package
-=======================
+dinosar.cloud package
+=====================
 
 Subpackages
 -----------
 
 .. toctree::
 
-    dinosar.archive.asf
+    dinosar.cloud.aws
 
 Module contents
 ---------------
 
-.. automodule:: dinosar.archive
+.. automodule:: dinosar.cloud
     :members:
     :undoc-members:
     :show-inheritance:

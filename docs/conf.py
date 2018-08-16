@@ -48,6 +48,8 @@ extensions = [
     'sphinx.ext.githubpages',
 ]
 
+napoleon_google_docstring = False
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -78,11 +80,16 @@ pygments_style = 'sphinx'
 
 
 # -- Options for HTML output -------------------------------------------------
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+add_module_names = False
+
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+#html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

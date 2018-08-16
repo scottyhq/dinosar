@@ -1,5 +1,5 @@
-dinosar Installation
-====================
+Installation
+============
 
 ``dinosar`` is easy to install with pip::
 
@@ -12,6 +12,7 @@ Requirements
 - To run `ISCE software`_ you need to have an institutional user agreement.
 - You'll need a `NASA Earthdata`_ login to download SAR data.
 - You'll need an AWS_ account to use AWS Batch functionality.
+- for Python dependencies see requirements.txt
 
 Configuration
 -------------

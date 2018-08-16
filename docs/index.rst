@@ -12,8 +12,9 @@ Welcome to dinosar's documentation!
 
    install
    quickstart
+   examples
+   api/index
    contributing
-
 
 Indices and tables
 ==================

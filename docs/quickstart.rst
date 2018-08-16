@@ -1,5 +1,5 @@
-dinosar Quickstart
-==================
+Quickstart
+==========
 
 Here are simple examples of how to use ``dinosar``. If you haven't installed it yet
 see installation.rst.
