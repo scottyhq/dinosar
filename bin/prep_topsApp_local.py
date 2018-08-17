@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Prepare directory for running topsApp.py on local machine.
 
-Generate interferogram folder containing: 
+Generate interferogram folder containing:
 topsApp.xml
 SLCs
 Orbit files
@@ -40,7 +40,8 @@ def cmdLineParse():
                         required=False, choices=(1, 2, 3),
                         help='Subswath numbers to process')
     parser.add_argument('-o', dest='poeorb', action='store_true',
-                        required=False, help='Use precise orbits (True/False)')
+                        required=False, default=True,
+                        help='Use precise orbits (True/False)')
     parser.add_argument('-t', type=str, dest='template', required=False,
                         help='Path to YAML input template file')
     parser.add_argument('-d', type=str, dest='dem', required=False,
@@ -74,7 +75,7 @@ def main(parser):
                                    'master': {'safe': ''},
                                    'slave': {'safe': ''},
                                    }
-                                }
+                     }
 
     intdir = 'int-{0}-{1}'.format(inps.master, inps.slave)
     if not os.path.isdir(intdir):
@@ -120,10 +121,11 @@ def main(parser):
     if inps.rlooks:
         inputDict['topsinsar']['rangelooks'] = inps.rlooks
     print(inputDict)
-    dice.dict2topsAppXML(inputDict)
-
-    #
+    xml = dice.dict2xml(inputDict)
+    dice.write_xml(xml)
+    # Create a download file
     asf.write_wget_download_file(downloadList)
+    print(f'Generated download-links.txt and topsApp.xml in {intdir}')
 
 
 if __name__ == '__main__':

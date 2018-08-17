@@ -2,3 +2,4 @@ include README.md
 include *.txt
 include versioneer.py
 include dinosar/_version.py
+include docker/

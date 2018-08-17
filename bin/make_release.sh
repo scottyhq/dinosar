@@ -1,12 +1,16 @@
 #!/bin/bash
 # Release a new dinosar version
+# USAGE ./make_release.sh 0.1.3
+# Note that every push to GitHub automatically runs travis CI and
+# Documentation will automatically be generated on Read the Docs
 
 VERSION=$1
 echo 'Creating release version $VERSION'
 
 # remake documentation with sphinx
+cd ..
 cd docs
-sphinx-apidoc -o api/ ../dinosar
+sphinx-apidoc -f --no-toc -o api/ ../dinosar
 make html
 cd ..
 

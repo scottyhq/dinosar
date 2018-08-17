@@ -340,7 +340,7 @@ def get_orbit_url(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
     """
     sat = granuleName[:3]
     date = granuleName[17:25]
-    print(f'downloading orbit for {sat}, {date}')
+    print(f'retrieving precise orbit URL for {sat}, {date}')
     r = requests.get(url)
     webpage = html.fromstring(r.content)
     orbits = webpage.xpath('//a/@href')
@@ -374,6 +374,7 @@ def get_slc_urls(gf, dateStr, relativeOrbit):
 
     """
     try:
+        print(f'retrieving SLC url for track {relativeOrbit}, {dateStr}')
         GF = gf.query('relativeOrbit == @relativeOrbit')
         GF = GF.loc[GF.dateStamp == dateStr]
         filenames = GF.downloadUrl.tolist()

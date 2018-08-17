@@ -13,6 +13,7 @@ Welcome to dinosar's documentation!
    install
    quickstart
    examples
+   topics/index
    api/index
    contributing
 

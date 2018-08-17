@@ -1,0 +1,30 @@
+topsinsar:
+  azimuthlooks: 7
+  demfilename: None
+  doesd: True
+  dointerferogram: True
+  dounwrap: True
+  filterstrength: 0.5
+  geocodeboundingbox: None
+  geocodelist: None
+  rangelooks: 19
+  regionofinterest: []
+  sensorname: SENTINEL1
+  swaths: []
+  unwrappername: snaphu
+  usegpu: True
+  usevirtualfiles: True
+
+  master:
+    safe: None
+    output directory: None
+    auxiliary data directory: None
+    orbit directory: None
+    polarization: 'vv'
+
+  slave:
+    safe: None
+    output directory: None
+    auxiliary data directory: None
+    orbit directory: None
+    polarization: 'vv'

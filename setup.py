@@ -1,6 +1,7 @@
 import versioneer
 import os
 from setuptools import find_packages, setup
+import glob
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -39,5 +40,7 @@ setup(
     keywords=['SAR', 'Cloud', 'Batch', 'AWS'],
     packages=find_packages(),
     install_requires=install_requires,
-    scripts=['bin/get_inventory_asf.py'],
+    #scripts=['bin/get_inventory_asf.py'],
+    include_package_data=True,
+    scripts=glob.glob('bin/*py'),
 )
