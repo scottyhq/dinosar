@@ -31,11 +31,11 @@ def read_yaml_template(template='topsApp-template.yml'):
 def dict2xml(dictionary, root='topsApp', topcomp='topsinsar'):
     """Convert simple dictionary to XML for ISCE."""
     def add_property(property, value):
-        xml = f"        <property name={property}>{value}</property>\n"
+        xml = f"        <property name='{property}'>{value}</property>\n"
         return xml
 
     def add_component(name, properties):
-        xml = f"    <component name={name}>\n"
+        xml = f"    <component name='{name}'>\n"
         for prop, val in properties.items():
             xml += add_property(prop, val)
         xml += f"    </component>\n"
