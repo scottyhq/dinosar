@@ -42,14 +42,14 @@ def dict2xml(dictionary, root='topsApp', topcomp='topsinsar'):
         return xml
 
     dictionary = dictionary[topcomp]
-    xml = f'<{root}>\n   <{topcomp}>\n'
+    xml = f'<{root}>\n   <component name="{topcomp}">\n'
     for key, val in dictionary.items():
         if isinstance(val, dict):
             xml += add_component(key, val)
         else:
             xml += add_property(key, val)
 
-    xml += f'    </{topcomp}>\n</{root}>\n'
+    xml += f'    </component>\n</{root}>\n'
 
     return xml
 

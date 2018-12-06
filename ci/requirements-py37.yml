@@ -1,0 +1,11 @@
+name: dinosar
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - requests>=2.18
+  - pandas>=0.23
+  - geopandas>=0.3
+  - lxml>=4.2
+  - pyyaml>=3.13
+  - matplotlib>=2.0

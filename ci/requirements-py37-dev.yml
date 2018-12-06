@@ -1,0 +1,25 @@
+name: dinosar
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - requests>=2.18
+  - pandas>=0.23
+  - geopandas>=0.3
+  - lxml>=4.2
+  - pyyaml>=3.13
+  - matplotlib>=2.0
+  - sphinx<1.8
+  - sphinx_rtd_theme>=0.4.1
+  - pandoc>=2.2
+  - flake8>=3.5.0
+  - jedi>=0.12.0
+  - pytest>=3.6.0
+  - pytest-cov>=2.5.1
+  - twine>=1.11.0
+  - setuptools>=39.2.0
+  - pydocstyle>=3.0
+  - awscli>=1.16
+  - cartopy>=0.16
+  - pip:
+      - versioneer>=0.18
