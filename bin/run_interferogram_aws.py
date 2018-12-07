@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate interferogram on AWS_BATCH.
 
-This script executs the following steps:
+This script executes the following steps:
     1) Sync interferogram processing directory on S3 to EFS drive
     2) Download DEM, Orbit fies, and auxillary files from ASF
     3) Download SLCs for Processing
@@ -55,11 +55,27 @@ def get_proc_files(int_s3, dem_s3, aux_s3='s3://sentinel1-auxdata'):
         run_bash_command(cmd)
 
 
+def create_netrc():
+    """Both aria2c and wget need this for authentication."""
+    nasauser = os.environ['NASAUSER']
+    nasapass = os.environ['NASAPASS']
+    netrcFile = os.path.expanduser('~/.netrc')
+    with open(netrcFile) as f:
+        f.write(f"""machine urs.earthdata.nasa.gov
+    login {nasauser}
+    password {nasapass}
+    """)
+    os.chmod(netrcFile, 0o600)
+
+
 def download_slcs():
     """Download SLC images from ASF server."""
     nasauser = os.environ['NASAUSER']
     nasapass = os.environ['NASAPASS']
-    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} --input-file=download-links.txt'
+    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} \
+            --input-file=download-links.txt'
+    # NOTE: look into speedups with parall downloads or direct S3 access!
+    # cmd = 'aria2c -x 8 -s 8 -i download-links.txt'
     # NOTE: don't print this command since it contains password info.
     run_bash_command(cmd)
 

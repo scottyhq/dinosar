@@ -1,5 +1,5 @@
 PRJ_SCONS_BUILD=/tmp/isce-2.2.0/build
-PRJ_SCONS_INSTALL=/opt/isce-2.2.0/install/isce
+PRJ_SCONS_INSTALL=/opt/isce-2.2.0/isce
 
 LIBPATH=/usr/lib/x86_64-linux-gnu /usr/lib /usr/lib/x86_64-linux-gnu/hdf5/serial
 CPPPATH=/usr/include/x86_64-linux-gnu /usr/include /usr/include/python3.6m /usr/include/hdf5/serial /usr/include/gdal

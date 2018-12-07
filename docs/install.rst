@@ -60,7 +60,7 @@ To get the full functionality of dinosar, you will need to install ISCE software
 
     DINODIR=`pip show dinosar | grep Location | cut -d':' -f2`
     cd $DINODIR/docker
-    docker build --rm -t dinosar/isce:v2.2.0 .
+    ./build.sh
 
 
 Now when you want to run ISCE, let Docker create a container from your image. By default this container will have access to all your system resources. **Unlike regular programs, docker containers are ephemeral and once closed all your data is deleted**, so be sure to map a local folder where you are working for data to persist. For example::
@@ -69,11 +69,17 @@ Now when you want to run ISCE, let Docker create a container from your image. By
 
 Docker containers also require additional command line arguments if you have graphical programs that you want to use (like `mdx.py`). It's convenient to wrap a bash function in your `~.bashrc` file so that launching ISCE is easy::
 
-    start_isce() {
-        IP=$(ifconfig en0 | awk '/inet /{print $2 ":0"}')
-        xhost +
-        docker run -it --rm -e DISPLAY=$IP -v $PWD:/home/ubuntu -v /tmp/.X11-unix:/tmp/.X11-unix dinosar/isce:v2.2.0 /bin/bash
-    }
+  start_isce () {
+      echo 'Starting interactive ISCE session via docker'
+      echo 'type "exit" to get back to your terminal'
+      IP=$(ifconfig en0 | awk '/inet /{print $2 ":0"}')
+      xhost +
+      docker run -it --rm -e DISPLAY=$IP \
+      -v $PWD:/home/ubuntu \
+      -v /tmp/.X11-unix:/tmp/.X11-unix \
+      dinosar/isce:v2.2.0 \
+      /bin/bash
+  }
 
 Now in a folder prepared for processing an interferogram, run::
 
