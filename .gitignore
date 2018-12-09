@@ -1,4 +1,5 @@
 # Custom stuff 
+examples/
 docs/source
 *.icloud
 tests/tmp/*

@@ -40,7 +40,7 @@ def inventory2s3(gf, s3bucket):
     Assumes geodataframe has already been filtered for desired frames.
     """
     filenames = gf.downloadUrl.tolist()
-    write_wget_download_file(filenames)
+    write_download_urls(filenames)
 
     nasauser = os.environ['NASAUSER']
     nasapass = os.environ['NASAPASS']
@@ -56,7 +56,7 @@ def inventory2s3(gf, s3bucket):
     shutil.rmtree('tmp')
 
 
-def load_asf_json(jsonfile: str):
+def load_asf_json(jsonfile):
     """Convert JSON metadata from ASF query to dataframe.
 
     JSON metadata returned from ASF DAAC API is loaded into a geopandas
@@ -386,7 +386,7 @@ def get_slc_urls(gf, dateStr, relativeOrbit):
     return filenames
 
 
-def write_wget_download_file(fileList):
+def write_download_urls(fileList):
     """Write list of frame urls to a file.
 
     This is useful if you are running isce on a server and want to keep a

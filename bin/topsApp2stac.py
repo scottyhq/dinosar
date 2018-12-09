@@ -2,6 +2,8 @@
 """
 For output/ folder from topsApp2aws.py, create STAC-compliant JSON metadata.
 
+Proof-of-concept example to test out Stac-browser with STAC version 0.5
+
 Fields to possibly add:
 - path, orbitIDs
 - mean incidence

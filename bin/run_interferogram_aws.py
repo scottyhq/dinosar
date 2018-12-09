@@ -13,15 +13,19 @@ import os
 import argparse
 import sys
 import subprocess
-
+import shutil
 
 def cmdLineParse():
     """Command line parser."""
-    parser = argparse.ArgumentParser(description='prepare ISCE 2.1.0 topsApp')
+    parser = argparse.ArgumentParser(description='prepare ISCE 2.2.0 topsApp')
     parser.add_argument('-i', type=str, dest='int_s3', required=True,
                         help='interferogram bucket name (s3://int-name)')
     parser.add_argument('-d', type=str, dest='dem_s3', required=True,
                         help='dem location (s3://dems-are-here)')
+    parser.add_argument('-c', dest='create_cogs', action='store_true',
+                        default=False, help='create cloud-optimized geotiff')
+    parser.add_argument('-r', dest='removedir', action='store_true',
+                        default=False, help='remove processing folder')
 
     return parser.parse_args()
 
@@ -46,50 +50,46 @@ def run_bash_command(cmd):
         print("Execution failed:", e, file=sys.stderr)
 
 
-def get_proc_files(int_s3, dem_s3, aux_s3='s3://sentinel1-auxdata'):
+def get_proc_files(int_s3, dem_s3):
     """Download ISCE configuration files and DEM from S3."""
     cmds = [f'aws s3 sync {int_s3} .',
-            f'aws s3 sync {dem_s3} .',
-            f'aws s3 sync {aux_s3} .']
+            f'aws s3 sync {dem_s3} .']
     for cmd in cmds:
         run_bash_command(cmd)
 
 
 def create_netrc():
     """Both aria2c and wget need this for authentication."""
+    # NOTE: hopefully will change to direct S3 access soon!
     nasauser = os.environ['NASAUSER']
     nasapass = os.environ['NASAPASS']
     netrcFile = os.path.expanduser('~/.netrc')
-    with open(netrcFile) as f:
+    with open(netrcFile, 'w') as f:
         f.write(f"""machine urs.earthdata.nasa.gov
-    login {nasauser}
-    password {nasapass}
+        login {nasauser}
+        password {nasapass}
     """)
     os.chmod(netrcFile, 0o600)
 
 
 def download_slcs():
     """Download SLC images from ASF server."""
-    nasauser = os.environ['NASAUSER']
-    nasapass = os.environ['NASAPASS']
-    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} \
-            --input-file=download-links.txt'
-    # NOTE: look into speedups with parall downloads or direct S3 access!
-    # cmd = 'aria2c -x 8 -s 8 -i download-links.txt'
-    # NOTE: don't print this command since it contains password info.
+    # cmd = f'wget -q -nc --user={nasauser} --password={nasapass} \
+    #        --input-file=download-links.txt'
+    cmd = 'aria2c -x 8 -s 8 -i download-links.txt'
     run_bash_command(cmd)
 
 
 def run_isce():
     """Call topsApp.py to generate single interferogram."""
-    cmd = 'topsApp.py 2>&1 topsApp.log'
+    cmd = 'topsApp.py --steps 2>&1 | tee topsApp.log'
     print(cmd)
     run_bash_command(cmd)
 
 
 def convert_outputs(int_s3):
     """Convert ISCE images to cloud-friendly format."""
-    cmd = f'isce2aws.py {int_s3}'
+    cmd = f'/home/ubuntu/bin/topsApp2aws.py {int_s3}'
     print(cmd)
     run_bash_command(cmd)
 
@@ -98,18 +98,21 @@ def main():
     """Process single interferogram."""
     inps = cmdLineParse()
     print_batch_params()
-    intname = os.path.basename(inps.int_s3)
-    os.mkdir(intname)  # NOTE: will fail if directory already exists
+    intname = inps.int_s3.lstrip('s3://')
+    if not os.path.isdir(intname): os.makedirs(intname)
     os.chdir(intname)
     get_proc_files(inps.int_s3, inps.dem_s3)
+    # create_netrc() #for now manually put in rootdir of EFS drive
     download_slcs()
     run_isce()
 
-    os.chdir('../')
-    convert_outputs(intname)
+    if inps.create_cogs:
+        convert_outputs(inps.int_s3)
 
-    # delete entire processing directory, (first save desired images to S3)
-    # rmtree(intname)
+    # Warning, this will remove entire processing(first save desired images to S3)
+    if inps.removedir:
+        os.chdir('../')
+        shutil.rmtree(intname)
 
 
 if __name__ == '__main__':

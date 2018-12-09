@@ -11,7 +11,7 @@ def cmdLineParse():
     """Command line parser."""
     parser = argparse.ArgumentParser(description='prepare ISCE 2.1 topsApp')
     parser.add_argument('-b', type=str, dest='batchmap_s3', required=True,
-                        help='batch interferogram list (s3://my-batch-job)')
+                        help='processing list (s3://my-batch-job/pairs.txt)')
     parser.add_argument('-d', type=str, dest='dem_s3', required=True,
                         help='dem location (s3://isce-dems)')
     return parser.parse_args()
@@ -31,7 +31,7 @@ def run_bash_command(cmd):
 
 def get_batch_mapping(list_s3):
     """Get map between AWS batch array job number and interferogram."""
-    cmd = f'aws s3 sync {list_s3} .'
+    cmd = f'aws s3 cp {list_s3} .'
     run_bash_command(cmd)
     with open('pairs.txt') as f:
         pairs = [line.rstrip() for line in f]
@@ -48,7 +48,9 @@ def main():
     index = int(os.environ['AWS_BATCH_JOB_ARRAY_INDEX'])
     pair = mapping[index]
     print(f'Batch index: {index}, Processing pair: {pair}')
-    cmd = f'run_interferogram_aws.py -i s3://{pair} -d {inps.dem_s3}'
+    # Temporary Cludge! need to add these scripts/dinosar to docker image
+    cmd = f'/home/ubuntu/bin/run_interferogram_aws.py -i s3://{pair} -d {inps.dem_s3}'
+    print(cmd)
     run_bash_command(cmd)
 
 

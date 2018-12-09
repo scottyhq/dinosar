@@ -56,8 +56,22 @@ def dict2xml(dictionary, root='topsApp', topcomp='topsinsar'):
 
 def write_xml(xml, outname='topsApp.xml'):
     """Write xml string to a file."""
+    print(f'writing {outname}')
     with open(outname, 'w') as f:
         f.write(xml)
+
+
+def load_defaultDict(template):
+    if template:
+        print(f'Reading from template file: {template}...')
+        inputDict = dice.read_yaml_template(template)
+    else:
+        inputDict = {'topsinsar': {'sensorname': 'SENTINEL1',
+                                   'master': {'safe': ''},
+                                   'slave': {'safe': ''},
+                                   }
+                                }
+    return inputDict
 
 
 def write_cmap(outname, vals, scalarMap):

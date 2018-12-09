@@ -9,3 +9,4 @@ dependencies:
   - lxml>=4.2
   - pyyaml>=3.13
   - matplotlib>=2.0
+  - rasterio>=1.0
