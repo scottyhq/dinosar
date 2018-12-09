@@ -17,8 +17,9 @@ def cmdLineParse():
     """Command line parser."""
     parser = argparse.ArgumentParser(description='create COGs')
     parser.add_argument('-i', type=str, dest='int_s3', required=True,
-                        help='interferogram bucket name (s3://int-name)')
-
+                        help='interferogram bucket name (s3://[int_s3])')
+    parser.add_argument('-o', type=str, dest='out_s3', required=False,
+                        help='output bucket (s3://[out_s3])')
     return parser.parse_args()
 
 
@@ -73,7 +74,10 @@ def main():
     dout.run_bash_command(cmd)
 
     # Push to S3 folder
-    s3output = inps.int_s3.replace('input','output')
+    if not inps.out_s3:
+        s3output = inps.int_s3.replace('input','output')
+    else:
+        s3output = inps.out_s3
     cmd = f'aws s3 sync output {s3output}'
     dout.run_bash_command(cmd)
 

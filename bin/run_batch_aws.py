@@ -49,7 +49,8 @@ def main():
     pair = mapping[index]
     print(f'Batch index: {index}, Processing pair: {pair}')
     # Temporary Cludge! need to add these scripts/dinosar to docker image
-    cmd = f'/home/ubuntu/bin/run_interferogram_aws.py -i s3://{pair} -d {inps.dem_s3}'
+    int_s3 = f's3://{pair}'
+    cmd = f'/home/ubuntu/bin/run_interferogram_aws.py -i {int_s3} -d {inps.dem_s3}'
     print(cmd)
     run_bash_command(cmd)
 

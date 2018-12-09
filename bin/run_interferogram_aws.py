@@ -24,8 +24,11 @@ def cmdLineParse():
                         help='dem location (s3://dems-are-here)')
     parser.add_argument('-c', dest='create_cogs', action='store_true',
                         default=False, help='create cloud-optimized geotiff')
+    parser.add_argument('-2', dest='create_stac', action='store_true',
+                        default=False, help='generate STAC metadata')
     parser.add_argument('-r', dest='removedir', action='store_true',
                         default=False, help='remove processing folder')
+
 
     return parser.parse_args()
 
@@ -97,7 +100,13 @@ def run_isce():
 
 def convert_outputs(int_s3):
     """Convert ISCE images to cloud-friendly format."""
-    cmd = f'/home/ubuntu/bin/topsApp2aws.py {int_s3}'
+    cmd = f'/home/ubuntu/bin/topsApp2aws.py -i {int_s3}'
+    print(cmd)
+    run_bash_command(cmd)
+
+def convert_outputs(int_s3):
+    """Convert ISCE images to cloud-friendly format."""
+    cmd = f'/home/ubuntu/bin/topsApp2stac.py -i {int_s3}'
     print(cmd)
     run_bash_command(cmd)
 
@@ -116,6 +125,9 @@ def main():
 
     if inps.create_cogs:
         convert_outputs(inps.int_s3)
+
+    if inps.create_stac:
+        create_stac(inps.int_s3)
 
     # Warning, this will remove entire processing(first save desired images to S3)
     # Alternatively can remove everything but /merged directory
