@@ -7,15 +7,15 @@ NOTES: instead of pre-rendering TILES and RGB files, just save original COGs
 and use emerging tools for rendering (see STAC spec on github)
 
 """
+import argparse
 import subprocess
-import sys
 import os
 import dinosar.isce as dice
 import dinosar.output as dout
 
 def cmdLineParse():
     """Command line parser."""
-    parser = argparse.ArgumentParser(description='create COGs)
+    parser = argparse.ArgumentParser(description='create COGs')
     parser.add_argument('-i', type=str, dest='int_s3', required=True,
                         help='interferogram bucket name (s3://int-name)')
 
@@ -23,7 +23,7 @@ def cmdLineParse():
 
 
 def main():
-    """Create COG output from topsApp.py ISCE 2.1.0."""
+    """Create COG output from topsApp.py ISCE 2.2.0."""
     inps = cmdLineParse()
     intname = inps.int_s3.lstrip('s3://')
     os.chdir(os.path.join(intname, 'merged'))

@@ -76,9 +76,17 @@ def download_slcs():
     """Download SLC images from ASF server."""
     # cmd = f'wget -q -nc --user={nasauser} --password={nasapass} \
     #        --input-file=download-links.txt'
-    cmd = 'aria2c -x 8 -s 8 -i download-links.txt'
+    cmd = 'aria2c -c -x 8 -s 8 -i download-links.txt'
     run_bash_command(cmd)
 
+def cleanup():
+    """Remove specified files from processing directory."""
+    cmd = 'rm -r S1*zip dem* coarse_coreg coarse_interferogram coarse_offsets \
+    ESD fine_coreg fine_interferogram fine_offsets \
+    geom_master masterdir PICKLE slavedir'
+    cmd = 'rm -r S1*zip dem*'
+    run_bash_command(cmd)
+    #
 
 def run_isce():
     """Call topsApp.py to generate single interferogram."""
@@ -110,6 +118,7 @@ def main():
         convert_outputs(inps.int_s3)
 
     # Warning, this will remove entire processing(first save desired images to S3)
+    # Alternatively can remove everything but /merged directory
     if inps.removedir:
         os.chdir('../')
         shutil.rmtree(intname)

@@ -6,7 +6,7 @@ topsinsar:
   filterstrength: 0.1
   regionofinterest: [46.45, 46.55, -120.53, -120.43]
   geocodeboundingbox: [46.45, 46.55, -120.53, -120.43]
-  geocodelist: [merged/filt_topophase.unw]
+  geocodelist: [merged/filt_topophase.unw, merged/phsig.cor, merged/topophase.cor, merged/los.rdr]
   doesd: True
   dounwrap: True
   unwrappername: snaphu_mcf
@@ -15,7 +15,7 @@ topsinsar:
 
   master:
     safe: ''
-    output directory: slavedir
+    output directory: masterdir
     auxiliary data directory: /home/ubunutu/s1_auxcal
     orbit directory: ./
     polarization: vv
