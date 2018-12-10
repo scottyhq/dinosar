@@ -104,9 +104,9 @@ def convert_outputs(int_s3):
     print(cmd)
     run_bash_command(cmd)
 
-def convert_outputs(int_s3):
+def create_stac(intname):
     """Convert ISCE images to cloud-friendly format."""
-    cmd = f'/home/ubuntu/bin/topsApp2stac.py -i {int_s3}'
+    cmd = f'/home/ubuntu/bin/topsApp2stac.py -i {intname}'
     print(cmd)
     run_bash_command(cmd)
 
@@ -118,19 +118,21 @@ def main():
     intname = inps.int_s3.lstrip('s3://')
     if not os.path.isdir(intname): os.makedirs(intname)
     os.chdir(intname)
-    get_proc_files(inps.int_s3, inps.dem_s3)
-    # create_netrc() #for now manually put in rootdir of EFS drive
-    download_slcs()
-    run_isce()
+    if not os.path.isdir('./merged'):
+        get_proc_files(inps.int_s3, inps.dem_s3)
+        # create_netrc() #for now manually put in rootdir of EFS drive
+        download_slcs()
+        run_isce()
+
+
+        #Note can run these afterwards!
+        if inps.create_cogs:
+            convert_outputs(inps.int_s3)
+
+        if inps.create_stac:
+            create_stac(intname)
+
     cleanup()
-
-    #Note can run these afterwards!
-    if inps.create_cogs:
-        convert_outputs(inps.int_s3)
-
-    if inps.create_stac:
-        create_stac(intname)
-
     # Warning, this will remove entire processing(first save desired images to S3)
     # Alternatively can remove everything but /merged directory
     if inps.removedir:
