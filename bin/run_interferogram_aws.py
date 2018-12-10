@@ -127,7 +127,7 @@ def main():
         convert_outputs(inps.int_s3)
 
     if inps.create_stac:
-        create_stac(inps.int_s3)
+        create_stac(intname)
 
     # Warning, this will remove entire processing(first save desired images to S3)
     # Alternatively can remove everything but /merged directory
