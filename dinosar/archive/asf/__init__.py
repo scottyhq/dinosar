@@ -244,11 +244,11 @@ def load_inventory(inventoryJSON):
 
     """
     gf = gpd.read_file(inventoryJSON)
-    gf['timeStamp'] = gpd.pd.to_datetime(gf.sceneDate,
+    gf['timeStamp'] = pd.to_datetime(gf.sceneDate,
                                          format='%Y-%m-%d %H:%M:%S')
     gf['sceneDateString'] = gf.timeStamp.apply(
         lambda x: x.strftime('%Y-%m-%d'))
-    gf['dateStamp'] = gpd.pd.to_datetime(gf.sceneDateString)
+    gf['dateStamp'] = pd.to_datetime(gf.sceneDateString)
     gf['utc'] = gf.timeStamp.apply(lambda x: x.strftime('%H:%M:%S'))
     gf['relativeOrbit'] = gf.relativeOrbit.astype('int')
     gf.sort_values('relativeOrbit', inplace=True)
@@ -320,7 +320,31 @@ def query_asf(snwe, sat='SA', format='json'):
         j.write(r.text)
 
 
-def get_orbit_url(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+def get_orbit_inventory(url='https://s1qc.asf.alaska.edu/aux_poeorb/files.txt'):
+    """WARNING: unfortunately files.txt is an incomplete listing"""
+    print(f'getting orbit file inventory from asf:', url)
+    df = pd.read_csv(url, header=None, names=['orbit'])
+    df.to_csv('sentinel1-orbits-asf.txt', index=False)
+
+
+def get_orbit_url(granuleName, inventory='/Users/scott/Documents/GitHub/dinosar/examples/poeorb.txt',
+                        url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+    """Find and construct orbit URL from directory listing."""
+    sat = granuleName[:3]
+    date = granuleName[17:25]
+    print(f'finding precise orbit for {sat}, {date}')
+    df = pd.read_csv(inventory, header=None, names=['orbit'])
+    dfSat = df[df.orbit.str.startswith(sat)].copy()
+    dayBefore = pd.to_datetime(date) - pd.to_timedelta(1, unit='d')
+    dayBeforeStr = dayBefore.strftime('%Y%m%d')
+    dfSat.loc[:, 'startTime'] = dfSat.orbit.str[42:50]
+    match = dfSat.loc[dfSat.startTime == dayBeforeStr, 'orbit'].values[0]
+    orbitUrl = f'{url}/{match}'
+
+    return orbitUrl
+
+
+def get_orbit_url_old(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
     """Retrieve precise orbit file for a specific Sentinel-1 granule.
 
     Precise orbits available ~3 weeks after aquisition.
@@ -344,9 +368,9 @@ def get_orbit_url(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
     r = requests.get(url)
     webpage = html.fromstring(r.content)
     orbits = webpage.xpath('//a/@href')
-    df = gpd.pd.DataFrame(dict(orbit=orbits))
+    df = pd.DataFrame(dict(orbit=orbits))
     dfSat = df[df.orbit.str.startswith(sat)].copy()
-    dayBefore = gpd.pd.to_datetime(date) - gpd.pd.to_timedelta(1, unit='d')
+    dayBefore = pd.to_datetime(date) - pd.to_timedelta(1, unit='d')
     dayBeforeStr = dayBefore.strftime('%Y%m%d')
     dfSat.loc[:, 'startTime'] = dfSat.orbit.str[42:50]
     match = dfSat.loc[dfSat.startTime == dayBeforeStr, 'orbit'].values[0]

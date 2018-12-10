@@ -38,6 +38,8 @@ def print_batch_params():
 
     print statements to stdout are recorded in AWS cloudwatch logs
     """
+    # NOTE: also print instance type currently running
+    print('CWD: ', os.getcwd())
     [print(x, os.environ[x]) for x in os.environ if x.startswith('AWS_BATCH')]
 
 
@@ -119,6 +121,8 @@ def main():
     if not os.path.isdir(intname): os.makedirs(intname)
     os.chdir(intname)
     if not os.path.isdir('./merged'):
+        # NOTE: for large batch workflows, consider pre-downloading all onto EFS!
+        # then link to directory in template file
         get_proc_files(inps.int_s3, inps.dem_s3)
         # create_netrc() #for now manually put in rootdir of EFS drive
         download_slcs()

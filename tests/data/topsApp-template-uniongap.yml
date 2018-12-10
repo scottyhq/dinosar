@@ -16,13 +16,13 @@ topsinsar:
   master:
     safe: ''
     output directory: masterdir
-    auxiliary data directory: /home/ubunutu/s1_auxcal
+    auxiliary data directory: /home/ubuntu/s1_auxcal
     orbit directory: ./
     polarization: vv
 
   slave:
     safe: ''
     output directory: slavedir
-    auxiliary data directory: /home/ubunutu/s1_auxcal
+    auxiliary data directory: /home/ubuntu/s1_auxcal
     orbit directory: ./
     polarization: vv
