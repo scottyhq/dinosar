@@ -194,8 +194,8 @@ def make_coherence_cmap(mapname='inferno', vmin=1e-5, vmax=1, ncolors=64,
 
 def make_cmap(infile):
     """Call correct cmap function depending on file."""
-    cornames = ['phsig.cor.geo.vrt', 'topophase.cor.geo.vrt']
-    phsnames = ['filt_topophase.unw.geo.vrt']
+    cornames = ['coherence-cog.tif', 'phsig.cor.geo.vrt', 'topophase.cor.geo.vrt']
+    phsnames = ['unwrapped-phase-cog.tif', 'filt_topophase.unw.geo.vrt']
 
     if infile in cornames:
         cpt = make_coherence_cmap()
