@@ -87,7 +87,7 @@ def cleanup():
     cmd = 'rm -r S1*zip dem* coarse_coreg coarse_interferogram coarse_offsets \
     ESD fine_coreg fine_interferogram fine_offsets \
     geom_master masterdir PICKLE slavedir'
-    cmd = 'rm -r S1*zip dem*'
+    #cmd = 'rm -r S1*zip dem*'
     run_bash_command(cmd)
     #
 
@@ -122,7 +122,9 @@ def main():
     # create_netrc() #for now manually put in rootdir of EFS drive
     download_slcs()
     run_isce()
+    cleanup()
 
+    #Note can run these afterwards!
     if inps.create_cogs:
         convert_outputs(inps.int_s3)
 

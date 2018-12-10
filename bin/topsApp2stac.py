@@ -230,8 +230,9 @@ def create_stac_json(intDir, catalog):
         stac_item['assets'][im]['href'] = im + '.tif'
         stac_item['assets'][im]['type'] = 'GeoTiff'
         stac_item['assets'][im]['cog'] = 'True'
+
     # Preview image chosen by 'format' key
-    stac_item['assets']['amplitude-cog-rgb']['format'] = 'cog'
+    stac_item['assets']['unwrapped-phase-cog-rgb']['format'] = 'cog'
 
     # Add single-band images
     images = ['amplitude',
