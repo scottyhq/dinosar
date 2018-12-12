@@ -1,0 +1,28 @@
+topsinsar:
+  sensorname: SENTINEL1
+  swaths: [1]
+  azimuthlooks: 1
+  rangelooks: 6
+  filterstrength: 0.1
+  regionofinterest: [46.45, 46.55, -120.53, -120.43]
+  geocodeboundingbox: [46.45, 46.55, -120.53, -120.43]
+  geocodelist: [merged/filt_topophase.unw, merged/phsig.cor, merged/topophase.cor, merged/los.rdr]
+  doesd: True
+  dounwrap: True
+  unwrappername: snaphu_mcf
+  demfilename: /home/ubuntu/isce-dems/demLat_N45_N48_Lon_W122_W119_15m.dem.wgs84
+  usegpu: False
+
+  master:
+    safe: ''
+    output directory: masterdir
+    auxiliary data directory: /home/ubuntu/s1-auxcal
+    orbit directory: /home/ubuntu/s1-poeorb
+    polarization: vv
+
+  slave:
+    safe: ''
+    output directory: slavedir
+    auxiliary data directory: /home/ubuntu/s1-auxcal
+    orbit directory: /home/ubuntu/s1-poeorb
+    polarization: vv

@@ -9,7 +9,7 @@ import os
 
 def cmdLineParse():
     """Command line parser."""
-    parser = argparse.ArgumentParser(description='prepare ISCE 2.1 topsApp')
+    parser = argparse.ArgumentParser(description='prepare ISCE 2.2 topsApp')
     parser.add_argument('-b', type=str, dest='batchmap_s3', required=True,
                         help='processing list (s3://my-batch-job/pairs.txt)')
     parser.add_argument('-d', type=str, dest='dem_s3', required=True,

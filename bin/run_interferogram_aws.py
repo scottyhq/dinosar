@@ -24,7 +24,7 @@ def cmdLineParse():
                         help='dem location (s3://dems-are-here)')
     parser.add_argument('-c', dest='create_cogs', action='store_true',
                         default=False, help='create cloud-optimized geotiff')
-    parser.add_argument('-2', dest='create_stac', action='store_true',
+    parser.add_argument('-s', dest='create_stac', action='store_true',
                         default=False, help='generate STAC metadata')
     parser.add_argument('-r', dest='removedir', action='store_true',
                         default=False, help='remove processing folder')
@@ -81,7 +81,7 @@ def download_slcs():
     """Download SLC images from ASF server."""
     # cmd = f'wget -q -nc --user={nasauser} --password={nasapass} \
     #        --input-file=download-links.txt'
-    cmd = 'aria2c -c -x 8 -s 8 -i download-links.txt'
+    # cmd = 'aria2c -c -x 8 -s 8 -i download-links.txt'
     run_bash_command(cmd)
 
 def cleanup():
@@ -124,12 +124,14 @@ def main():
         # NOTE: for large batch workflows, consider pre-downloading all onto EFS!
         # then link to directory in template file
         get_proc_files(inps.int_s3, inps.dem_s3)
-        # create_netrc() #for now manually put in rootdir of EFS drive
-        download_slcs()
+        #create_netrc() #for now manually put in rootdir of EFS drive
+        #download_slcs()
         run_isce()
 
 
-        #Note can run these afterwards!
+        # Note can run these afterwards separately (require dinosar package)
+        # which is not currently baked into ISCE AMI
+        # ideally, create another docker image w/ dinosar & trigger when task completes
         if inps.create_cogs:
             convert_outputs(inps.int_s3)
 

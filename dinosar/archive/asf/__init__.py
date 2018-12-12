@@ -274,7 +274,7 @@ def download_scene(downloadUrl):
     run_bash_command(cmd)
 
 
-def query_asf(snwe, sat='SA', format='json'):
+def query_asf(snwe, sat='SA', format='json', orbit=None, start=None, stop=None):
     """Search ASF with [south, north, west, east] bounds.
 
     Saves result to local file: query_{sat}.{format}
@@ -298,6 +298,9 @@ def query_asf(snwe, sat='SA', format='json'):
     relativeOrbit,maxResults,processingDate,start or end acquisition time,
     slaveStart/slaveEnd
 
+    * to generate metalink for bulk pre-batch download, granule_list probably
+    easiest input
+
     """
     print(f'Querying ASF Vertex for {sat}...')
     miny, maxy, minx, maxx = snwe
@@ -311,6 +314,12 @@ def query_asf(snwe, sat='SA', format='json'):
                 processingLevel='SLC',
                 beamMode='IW',
                 output=format)
+    if orbit:
+        data['relativeOrbit']=orbit
+    if start:
+        data['start']=start
+    if stop:
+        data['end']=stop
 
     r = requests.get(baseurl, params=data, timeout=100)
     print(r.url)
@@ -377,6 +386,21 @@ def get_orbit_url_old(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb')
     orbitUrl = f'{url}/{match}'
 
     return orbitUrl
+
+
+def get_slc_names(gf, dateStr, relativeOrbit):
+    """return just filenames rather than urls"""
+    try:
+        print(f'retrieving SLC.zip for track {relativeOrbit}, {dateStr}')
+        GF = gf.query('relativeOrbit == @relativeOrbit')
+        GF = GF.loc[GF.dateStamp == dateStr]
+        filenames = GF.fileName.tolist()
+    except Exception as e:
+        print('ERROR retrieving scenes, double check dates!')
+        print(e)
+        pass
+
+    return filenames
 
 
 def get_slc_urls(gf, dateStr, relativeOrbit):
