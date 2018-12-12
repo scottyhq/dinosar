@@ -123,7 +123,7 @@ def main():
     if not os.path.isdir('./merged'):
         # NOTE: for large batch workflows, consider pre-downloading all onto EFS!
         # then link to directory in template file
-        get_proc_files(inps.int_s3, inps.dem_s3)
+        #get_proc_files(inps.int_s3, inps.dem_s3)
         #create_netrc() #for now manually put in rootdir of EFS drive
         #download_slcs()
         run_isce()

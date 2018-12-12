@@ -32,8 +32,9 @@ def run_bash_command(cmd):
 def get_batch_mapping(list_s3):
     """Get map between AWS batch array job number and interferogram."""
     cmd = f'aws s3 cp {list_s3} .'
+    localFile = os.path.basename(list_s3)
     run_bash_command(cmd)
-    with open('pairs.txt') as f:
+    with open(localFile) as f:
         pairs = [line.rstrip() for line in f]
         mapping = dict(enumerate(pairs))
 
