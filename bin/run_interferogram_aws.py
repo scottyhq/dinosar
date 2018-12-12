@@ -57,8 +57,8 @@ def run_bash_command(cmd):
 
 def get_proc_files(int_s3, dem_s3):
     """Download ISCE configuration files and DEM from S3."""
-    cmds = [f'aws s3 sync {int_s3} .',
-            f'aws s3 sync {dem_s3} .']
+    cmds = [f'aws s3 sync {int_s3} .']#,
+            #f'aws s3 sync {dem_s3} .']
     for cmd in cmds:
         run_bash_command(cmd)
 
@@ -123,7 +123,7 @@ def main():
     if not os.path.isdir('./merged'):
         # NOTE: for large batch workflows, consider pre-downloading all onto EFS!
         # then link to directory in template file
-        #get_proc_files(inps.int_s3, inps.dem_s3)
+        get_proc_files(inps.int_s3, inps.dem_s3)
         #create_netrc() #for now manually put in rootdir of EFS drive
         #download_slcs()
         run_isce()
