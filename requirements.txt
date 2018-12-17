@@ -4,4 +4,4 @@ geopandas>=0.3
 lxml>=4.2
 pyyaml>=3.13
 matplotlib>=2.0
-cartopy>=0.16
+#cartopy>=0.16

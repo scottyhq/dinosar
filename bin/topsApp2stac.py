@@ -171,7 +171,7 @@ def create_stac_json(intDir, catalog):
     stac_item = OrderedDict()
     stac_item['type'] = 'Feature'
     # NOTE: should be unique ID (e.g. path, dates)
-    stac_item['id'] = intDir
+    stac_item['id'] = os.path.basename(intDir)
 
     inFile = 'amplitude-cog-rgb.tif'
     with rasterio.open(os.path.join(intDir, inFile), nodata=0.0) as ds:

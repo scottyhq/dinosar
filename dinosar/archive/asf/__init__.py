@@ -46,7 +46,8 @@ def inventory2s3(gf, s3bucket):
     nasapass = os.environ['NASAPASS']
     os.mkdir('tmp')
     os.chdir('tmp')
-    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} --input-file=download-links.txt'
+    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} \
+    --input-file=download-links.txt'
     # NOTE: don't print this command since it contains password info.
     run_bash_command(cmd)
 
@@ -84,7 +85,7 @@ def load_asf_json(jsonfile):
 
     gf['timeStamp'] = pd.to_datetime(gf.sceneDate, format='%Y-%m-%d %H:%M:%S')
     gf['sceneDateString'] = gf.timeStamp.apply(
-                                            lambda x: x.strftime('%Y-%m-%d'))
+        lambda x: x.strftime('%Y-%m-%d'))
     gf['dateStamp'] = pd.to_datetime(gf.sceneDateString)
     gf['utc'] = gf.timeStamp.apply(lambda x: x.strftime('%H:%M:%S'))
     gf['orbitCode'] = gf.relativeOrbit.astype('category').cat.codes
@@ -245,7 +246,7 @@ def load_inventory(inventoryJSON):
     """
     gf = gpd.read_file(inventoryJSON)
     gf['timeStamp'] = pd.to_datetime(gf.sceneDate,
-                                         format='%Y-%m-%d %H:%M:%S')
+                                     format='%Y-%m-%d %H:%M:%S')
     gf['sceneDateString'] = gf.timeStamp.apply(
         lambda x: x.strftime('%Y-%m-%d'))
     gf['dateStamp'] = pd.to_datetime(gf.sceneDateString)
@@ -274,7 +275,8 @@ def download_scene(downloadUrl):
     run_bash_command(cmd)
 
 
-def query_asf(snwe, sat='SA', format='json', orbit=None, start=None, stop=None):
+def query_asf(snwe, sat='SA', format='json',
+              orbit=None, start=None, stop=None):
     """Search ASF with [south, north, west, east] bounds.
 
     Saves result to local file: query_{sat}.{format}
@@ -315,11 +317,11 @@ def query_asf(snwe, sat='SA', format='json', orbit=None, start=None, stop=None):
                 beamMode='IW',
                 output=format)
     if orbit:
-        data['relativeOrbit']=orbit
+        data['relativeOrbit'] = orbit
     if start:
-        data['start']=start
+        data['start'] = start
     if stop:
-        data['end']=stop
+        data['end'] = stop
 
     r = requests.get(baseurl, params=data, timeout=100)
     print(r.url)
@@ -329,15 +331,9 @@ def query_asf(snwe, sat='SA', format='json', orbit=None, start=None, stop=None):
         j.write(r.text)
 
 
-def get_orbit_inventory(url='https://s1qc.asf.alaska.edu/aux_poeorb/files.txt'):
-    """WARNING: unfortunately files.txt is an incomplete listing"""
-    print(f'getting orbit file inventory from asf:', url)
-    df = pd.read_csv(url, header=None, names=['orbit'])
-    df.to_csv('sentinel1-orbits-asf.txt', index=False)
-
-
-def get_orbit_url(granuleName, inventory='/Users/scott/Documents/GitHub/dinosar/examples/poeorb.txt',
-                        url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+def get_orbit_url_file(granuleName,
+                       inventory='poeorb.txt',
+                       url='https://s1qc.asf.alaska.edu/aux_poeorb'):
     """Find and construct orbit URL from directory listing."""
     sat = granuleName[:3]
     date = granuleName[17:25]
@@ -353,7 +349,8 @@ def get_orbit_url(granuleName, inventory='/Users/scott/Documents/GitHub/dinosar/
     return orbitUrl
 
 
-def get_orbit_url_old(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+def get_orbit_url_server(granuleName,
+                         url='https://s1qc.asf.alaska.edu/aux_poeorb'):
     """Retrieve precise orbit file for a specific Sentinel-1 granule.
 
     Precise orbits available ~3 weeks after aquisition.
@@ -361,7 +358,8 @@ def get_orbit_url_old(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb')
     Parameters
     ----------
     granuleName : str
-        ASF granule name (e.g. S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA)
+        ASF granule name, e.g.:
+        S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA
     url : str
         website with simple list of orbit file links
 
