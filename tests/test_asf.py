@@ -91,4 +91,4 @@ def test_get_slcs():
     assert type(urls) == list
     assert len(urls) == 1
     assert urls[0] == 'https://datapool.asf.alaska.edu/SLC/SB/\
-    S1B_IW_SLC__1SDV_20180320T232821_20180320T232848_010121_01260A_0613.zip'
+S1B_IW_SLC__1SDV_20180320T232821_20180320T232848_010121_01260A_0613.zip'
