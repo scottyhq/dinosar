@@ -74,7 +74,7 @@ def test_get_orbit_url():
     """Get URL of precise orbit for a given granule."""
     gid = 'S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA'
     # url = asf.get_orbit_url_server(gid) Dont require server connection
-    url = asf.get_orbit_url_file(gid, inventory='tests/data/poerb.txt')
+    url = asf.get_orbit_url_file(gid, inventory='tests/data/poeorb.txt')
 
     assert type(url) == str
     assert url.endswith('.EOF')
