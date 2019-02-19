@@ -276,7 +276,7 @@ def download_scene(downloadUrl):
 
 
 def query_asf(snwe, sat='SA', format='json',
-              orbit=None, start=None, stop=None):
+              orbit=None, start=None, stop=None, beam='IW'):
     """Search ASF with [south, north, west, east] bounds.
 
     Saves result to local file: query_{sat}.{format}
@@ -314,7 +314,7 @@ def query_asf(snwe, sat='SA', format='json',
     data = dict(intersectsWith=polygonWKT,
                 platform=sat,
                 processingLevel='SLC',
-                beamMode='IW',
+                beamMode=beam,
                 output=format)
     if orbit:
         data['relativeOrbit'] = orbit
