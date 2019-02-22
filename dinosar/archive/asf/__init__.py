@@ -40,13 +40,14 @@ def inventory2s3(gf, s3bucket):
     Assumes geodataframe has already been filtered for desired frames.
     """
     filenames = gf.downloadUrl.tolist()
-    write_wget_download_file(filenames)
+    write_download_urls(filenames)
 
     nasauser = os.environ['NASAUSER']
     nasapass = os.environ['NASAPASS']
     os.mkdir('tmp')
     os.chdir('tmp')
-    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} --input-file=download-links.txt'
+    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} \
+    --input-file=download-links.txt'
     # NOTE: don't print this command since it contains password info.
     run_bash_command(cmd)
 
@@ -56,7 +57,7 @@ def inventory2s3(gf, s3bucket):
     shutil.rmtree('tmp')
 
 
-def load_asf_json(jsonfile: str):
+def load_asf_json(jsonfile):
     """Convert JSON metadata from ASF query to dataframe.
 
     JSON metadata returned from ASF DAAC API is loaded into a geopandas
@@ -84,7 +85,7 @@ def load_asf_json(jsonfile: str):
 
     gf['timeStamp'] = pd.to_datetime(gf.sceneDate, format='%Y-%m-%d %H:%M:%S')
     gf['sceneDateString'] = gf.timeStamp.apply(
-                                            lambda x: x.strftime('%Y-%m-%d'))
+        lambda x: x.strftime('%Y-%m-%d'))
     gf['dateStamp'] = pd.to_datetime(gf.sceneDateString)
     gf['utc'] = gf.timeStamp.apply(lambda x: x.strftime('%H:%M:%S'))
     gf['orbitCode'] = gf.relativeOrbit.astype('category').cat.codes
@@ -244,11 +245,11 @@ def load_inventory(inventoryJSON):
 
     """
     gf = gpd.read_file(inventoryJSON)
-    gf['timeStamp'] = gpd.pd.to_datetime(gf.sceneDate,
-                                         format='%Y-%m-%d %H:%M:%S')
+    gf['timeStamp'] = pd.to_datetime(gf.sceneDate,
+                                     format='%Y-%m-%d %H:%M:%S')
     gf['sceneDateString'] = gf.timeStamp.apply(
         lambda x: x.strftime('%Y-%m-%d'))
-    gf['dateStamp'] = gpd.pd.to_datetime(gf.sceneDateString)
+    gf['dateStamp'] = pd.to_datetime(gf.sceneDateString)
     gf['utc'] = gf.timeStamp.apply(lambda x: x.strftime('%H:%M:%S'))
     gf['relativeOrbit'] = gf.relativeOrbit.astype('int')
     gf.sort_values('relativeOrbit', inplace=True)
@@ -274,7 +275,8 @@ def download_scene(downloadUrl):
     run_bash_command(cmd)
 
 
-def query_asf(snwe, sat='SA', format='json'):
+def query_asf(snwe, sat='SA', format='json',
+              orbit=None, start=None, stop=None, beam='IW'):
     """Search ASF with [south, north, west, east] bounds.
 
     Saves result to local file: query_{sat}.{format}
@@ -298,6 +300,9 @@ def query_asf(snwe, sat='SA', format='json'):
     relativeOrbit,maxResults,processingDate,start or end acquisition time,
     slaveStart/slaveEnd
 
+    * to generate metalink for bulk pre-batch download, granule_list probably
+    easiest input
+
     """
     print(f'Querying ASF Vertex for {sat}...')
     miny, maxy, minx, maxx = snwe
@@ -309,8 +314,14 @@ def query_asf(snwe, sat='SA', format='json'):
     data = dict(intersectsWith=polygonWKT,
                 platform=sat,
                 processingLevel='SLC',
-                beamMode='IW',
+                beamMode=beam,
                 output=format)
+    if orbit:
+        data['relativeOrbit'] = orbit
+    if start:
+        data['start'] = start
+    if stop:
+        data['end'] = stop
 
     r = requests.get(baseurl, params=data, timeout=100)
     print(r.url)
@@ -320,7 +331,26 @@ def query_asf(snwe, sat='SA', format='json'):
         j.write(r.text)
 
 
-def get_orbit_url(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+def get_orbit_url_file(granuleName,
+                       inventory='poeorb.txt',
+                       url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+    """Find and construct orbit URL from directory listing."""
+    sat = granuleName[:3]
+    date = granuleName[17:25]
+    print(f'finding precise orbit for {sat}, {date}')
+    df = pd.read_csv(inventory, header=None, names=['orbit'])
+    dfSat = df[df.orbit.str.startswith(sat)].copy()
+    dayBefore = pd.to_datetime(date) - pd.to_timedelta(1, unit='d')
+    dayBeforeStr = dayBefore.strftime('%Y%m%d')
+    dfSat.loc[:, 'startTime'] = dfSat.orbit.str[42:50]
+    match = dfSat.loc[dfSat.startTime == dayBeforeStr, 'orbit'].values[0]
+    orbitUrl = f'{url}/{match}'
+
+    return orbitUrl
+
+
+def get_orbit_url_server(granuleName,
+                         url='https://s1qc.asf.alaska.edu/aux_poeorb'):
     """Retrieve precise orbit file for a specific Sentinel-1 granule.
 
     Precise orbits available ~3 weeks after aquisition.
@@ -328,7 +358,8 @@ def get_orbit_url(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
     Parameters
     ----------
     granuleName : str
-        ASF granule name (e.g. S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA)
+        ASF granule name, e.g.:
+        S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA
     url : str
         website with simple list of orbit file links
 
@@ -344,15 +375,30 @@ def get_orbit_url(granuleName, url='https://s1qc.asf.alaska.edu/aux_poeorb'):
     r = requests.get(url)
     webpage = html.fromstring(r.content)
     orbits = webpage.xpath('//a/@href')
-    df = gpd.pd.DataFrame(dict(orbit=orbits))
+    df = pd.DataFrame(dict(orbit=orbits))
     dfSat = df[df.orbit.str.startswith(sat)].copy()
-    dayBefore = gpd.pd.to_datetime(date) - gpd.pd.to_timedelta(1, unit='d')
+    dayBefore = pd.to_datetime(date) - pd.to_timedelta(1, unit='d')
     dayBeforeStr = dayBefore.strftime('%Y%m%d')
     dfSat.loc[:, 'startTime'] = dfSat.orbit.str[42:50]
     match = dfSat.loc[dfSat.startTime == dayBeforeStr, 'orbit'].values[0]
     orbitUrl = f'{url}/{match}'
 
     return orbitUrl
+
+
+def get_slc_names(gf, dateStr, relativeOrbit):
+    """return just filenames rather than urls"""
+    try:
+        print(f'retrieving SLC.zip for track {relativeOrbit}, {dateStr}')
+        GF = gf.query('relativeOrbit == @relativeOrbit')
+        GF = GF.loc[GF.dateStamp == dateStr]
+        filenames = GF.fileName.tolist()
+    except Exception as e:
+        print('ERROR retrieving scenes, double check dates!')
+        print(e)
+        pass
+
+    return filenames
 
 
 def get_slc_urls(gf, dateStr, relativeOrbit):
@@ -386,7 +432,7 @@ def get_slc_urls(gf, dateStr, relativeOrbit):
     return filenames
 
 
-def write_wget_download_file(fileList):
+def write_download_urls(fileList):
     """Write list of frame urls to a file.
 
     This is useful if you are running isce on a server and want to keep a

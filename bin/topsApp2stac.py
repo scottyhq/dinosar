@@ -2,6 +2,8 @@
 """
 For output/ folder from topsApp2aws.py, create STAC-compliant JSON metadata.
 
+Proof-of-concept example to test out Stac-browser with STAC version 0.5
+
 Fields to possibly add:
 - path, orbitIDs
 - mean incidence
@@ -63,11 +65,11 @@ def filename2datetime(safeFile):
     return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def update_catalog(catalog, intDir):
+def update_catalog(catalog, intName):
     """Add new STAC item to STAC catalog."""
     # newline = {'child': 'item', 'href': itemJsonFile}
     # newline = {'rel': 'item', 'href': itemJsonFile}
-    href = '{0}/{0}.json'.format(intDir)
+    href = '{0}/{0}.json'.format(intName)
     newline = {'rel': 'item', 'href': href}
     catalogDict = read_stac_json(catalog)
     catalogDict['links'].append(newline)
@@ -87,7 +89,7 @@ def read_topsAppxml(xmlFile):
     topsParams = OrderedDict()
     for A in ['master', 'slave']:
         topsParams[A] = OrderedDict()
-        querySafe = f".//component[@name='{A}']/property[@name='safe']/value"
+        querySafe = f".//component[@name='{A}']/property[@name='safe']"
         val = root.findall(querySafe)[0].text
         if val.startswith('['):
             val = ast.literal_eval(val)
@@ -95,9 +97,9 @@ def read_topsAppxml(xmlFile):
 
     # Read specific topsinsar properties
     # list = ast.literal_eval("[1,2,3]") #to convert lists in strings
-    props = ['unwrapper name', 'swaths', 'geocode bounding box', 'demfilename']
+    props = ['unwrappername', 'swaths', 'geocodeboundingbox', 'demfilename']
     for P in props:
-        val = root.findall(f".//property[@name='{P}']/value")[0].text
+        val = root.findall(f".//property[@name='{P}']")[0].text
         if val.startswith('['):
             val = ast.literal_eval(val)
         topsParams[P] = val
@@ -135,10 +137,10 @@ def add_topsParams(intDir, stac_item):
     topsParams = read_topsAppxml(os.path.join(intDir, 'topsApp.xml'))
     isceMeta = read_isce_log(os.path.join(intDir, 'isce.log'))
     topsParams.update(isceMeta)
-
+    #Warning case and whitespace sensitive...
     stac_item['properties']['isce:master'] = topsParams['master']['safe']
     stac_item['properties']['isce:slave'] = topsParams['slave']['safe']
-    stac_item['properties']['isce:unwrapper'] = topsParams['unwrapper name']
+    stac_item['properties']['isce:unwrapper'] = topsParams['unwrappername']
     stac_item['properties']['isce:swaths'] = topsParams['swaths']
     stac_item['properties']['isce:dem'] = topsParams['demfilename']
     stac_item['properties']['isce:procdate'] = topsParams['procDate']
@@ -166,12 +168,10 @@ def create_stac_json(intDir, catalog):
     s3Bucket = catalogURL.split('.')[0].split('/')[-1]
     s3URL = "s3://" + s3Bucket
 
-    outfile = intDir + '.json'
-
     stac_item = OrderedDict()
     stac_item['type'] = 'Feature'
     # NOTE: should be unique ID (e.g. path, dates)
-    stac_item['id'] = intDir
+    stac_item['id'] = os.path.basename(intDir)
 
     inFile = 'amplitude-cog-rgb.tif'
     with rasterio.open(os.path.join(intDir, inFile), nodata=0.0) as ds:
@@ -191,7 +191,9 @@ def create_stac_json(intDir, catalog):
     stac_item['properties'] = OrderedDict()
     stac_item['properties']['provider'] = 'UW Geodesy Lab'
     # Use master date for datetime
-    timestr = intDir.split('-')[1]
+    intName = os.path.basename(intDir)
+    outfile = intName + '.json'
+    timestr = intName.split('-')[1]
     dt = datetime.datetime.strptime(timestr, '%Y%m%d')
     dateStr = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
     stac_item['properties']['datetime'] = dateStr
@@ -202,7 +204,7 @@ def create_stac_json(intDir, catalog):
     stac_item['links'] = OrderedDict()
     stac_item['links']['self'] = OrderedDict()
     stac_item['links']['self']['rel'] = 'self'
-    stac_item['links']['self']['href'] = f'{catalogURL}/{intDir}/{outfile}'
+    stac_item['links']['self']['href'] = f'{catalogURL}/{intName}/{outfile}'
 
     stac_item['links']['catalog'] = OrderedDict()
     stac_item['links']['catalog']['rel'] = 'catalog'
@@ -228,8 +230,9 @@ def create_stac_json(intDir, catalog):
         stac_item['assets'][im]['href'] = im + '.tif'
         stac_item['assets'][im]['type'] = 'GeoTiff'
         stac_item['assets'][im]['cog'] = 'True'
+
     # Preview image chosen by 'format' key
-    stac_item['assets']['amplitude-cog-rgb']['format'] = 'cog'
+    stac_item['assets']['unwrapped-phase-cog-rgb']['format'] = 'cog'
 
     # Add single-band images
     images = ['amplitude',
@@ -258,9 +261,10 @@ def main(parser):
     args = parser.parse_args()
     stacDict = create_stac_json(args.intDir, args.catalog)
     stacDict = add_topsParams(args.intDir, stacDict)
-    outfile = './{0}/{0}.json'.format(args.intDir)
+    intName = os.path.basename(args.intDir)
+    outfile = f'{args.intDir}/{intName}.json'
     write_stac_json(stacDict, outfile)
-    update_catalog(args.catalog, args.intDir)
+    update_catalog(args.catalog, intName)
     print(f'Wrote {outfile}, updated {args.catalog}')
 
 

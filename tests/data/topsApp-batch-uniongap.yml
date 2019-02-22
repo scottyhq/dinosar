@@ -10,19 +10,19 @@ topsinsar:
   doesd: True
   dounwrap: True
   unwrappername: snaphu_mcf
-  demfilename: demLat_N45_N48_Lon_W122_W119_15m.dem.wgs84
+  demfilename: /home/ubuntu/isce-dems/demLat_N45_N48_Lon_W122_W119_15m.dem.wgs84
   usegpu: False
 
   master:
     safe: ''
     output directory: masterdir
-    auxiliary data directory: /home/ubuntu/s1_auxcal
-    orbit directory: ./
+    auxiliary data directory: /home/ubuntu/s1-auxcal
+    orbit directory: /home/ubuntu/s1-poeorb
     polarization: vv
 
   slave:
     safe: ''
     output directory: slavedir
-    auxiliary data directory: /home/ubuntu/s1_auxcal
-    orbit directory: ./
+    auxiliary data directory: /home/ubuntu/s1-auxcal
+    orbit directory: /home/ubuntu/s1-poeorb
     polarization: vv

@@ -56,8 +56,21 @@ def dict2xml(dictionary, root='topsApp', topcomp='topsinsar'):
 
 def write_xml(xml, outname='topsApp.xml'):
     """Write xml string to a file."""
+    print(f'writing {outname}')
     with open(outname, 'w') as f:
         f.write(xml)
+
+
+def load_defaultDict(template):
+    if template:
+        print(f'Reading from template file: {template}...')
+        inputDict = dice.read_yaml_template(template)
+    else:
+        inputDict = {'topsinsar': {'sensorname': 'SENTINEL1',
+                                   'master': {'safe': ''},
+                                   'slave': {'safe': ''},
+                                   }}
+    return inputDict
 
 
 def write_cmap(outname, vals, scalarMap):
@@ -180,14 +193,16 @@ def make_coherence_cmap(mapname='inferno', vmin=1e-5, vmax=1, ncolors=64,
 
 def make_cmap(infile):
     """Call correct cmap function depending on file."""
-    cornames = ['phsig.cor.geo.vrt', 'topophase.cor.geo.vrt']
-    phsnames = ['filt_topophase.unw.geo.vrt']
+    cornames = ['coherence-cog.tif',
+                'phsig.cor.geo.vrt',
+                'topophase.cor.geo.vrt']
+    phsnames = ['unwrapped-phase-cog.tif', 'filt_topophase.unw.geo.vrt']
 
     if infile in cornames:
         cpt = make_coherence_cmap()
     elif infile in phsnames:
         cpt = make_wrapped_phase_cmap()
-    else: #amplitude cmap
+    else:  # amplitude cmap
         cpt = make_amplitude_cmap()
 
     return cpt

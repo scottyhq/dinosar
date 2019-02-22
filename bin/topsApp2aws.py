@@ -7,16 +7,26 @@ NOTES: instead of pre-rendering TILES and RGB files, just save original COGs
 and use emerging tools for rendering (see STAC spec on github)
 
 """
+import argparse
 import subprocess
-import sys
 import os
 import dinosar.isce as dice
 import dinosar.output as dout
 
+def cmdLineParse():
+    """Command line parser."""
+    parser = argparse.ArgumentParser(description='create COGs')
+    parser.add_argument('-i', type=str, dest='int_s3', required=True,
+                        help='interferogram bucket name (s3://[int_s3])')
+    parser.add_argument('-o', type=str, dest='outdir', required=False,
+                        help='directory to move outputs to local_dir')
+    return parser.parse_args()
+
 
 def main():
-    """Create COG output from topsApp.py ISCE 2.1.0."""
-    intname = sys.argv[1]
+    """Create COG output from topsApp.py ISCE 2.2.0."""
+    inps = cmdLineParse()
+    intname = inps.int_s3.lstrip('s3://')
     os.chdir(os.path.join(intname, 'merged'))
     # Output name : (corresponding ISCE output, band number)
     conversions = {'amplitude-cog.tif': ('filt_topophase.unw.geo.vrt', 1),
@@ -58,14 +68,21 @@ def main():
     # Put everything into a single output folder
     if not os.path.isdir('output'):
         os.mkdir('output')
-    cmd = 'mv index.html ../isce.log ../topsApp.xml *-cog* output'
+    cmd = 'cp index.html ../isce.log ../topsApp.xml output'
+    dout.run_bash_command(cmd)
+    cmd = 'mv *-cog* output'
+    dout.run_bash_command(cmd)
+    outdir = os.path.join(inps.outdir, os.path.basename(intname))
+    cmd = f'mv output {outdir}'
     dout.run_bash_command(cmd)
 
     # Push to S3 folder
-    cmd = f'aws s3 sync output s3://{intname}'
-    dout.run_bash_command(cmd)
-
-    print('isce2aws is all done!')
+    #if not inps.out_s3:
+    #    s3output = inps.int_s3.replace('input','output')
+    #else:
+    #    s3output = inps.out_s3
+    #cmd = f'aws s3 sync output {s3output}'
+    #dout.run_bash_command(cmd)
 
 
 # Get interferogram name from command line argument

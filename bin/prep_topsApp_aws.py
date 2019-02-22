@@ -27,7 +27,7 @@ def cmdLineParse():
     """Command line parser."""
     parser = argparse.ArgumentParser(description='prepare ISCE 2.1 topsApp.py')
     parser.add_argument('-i', type=str, dest='inventory', required=True,
-                        help='Inventory vector file (query.geojson)')
+                        help='Inventory file (query.geojson)')
     parser.add_argument('-m', type=str, dest='master', required=True,
                         help='Master date')
     parser.add_argument('-s', type=str, dest='slave', required=True,
@@ -37,7 +37,7 @@ def cmdLineParse():
     parser.add_argument('-n', type=int, nargs='+', dest='swaths',
                         required=False, choices=(1, 2, 3),
                         help='Subswath numbers to process')
-    parser.add_argument('-o', dest='poeorb', action='store_true',
+    parser.add_argument('-o', dest='poeorb', action='store_true', default=True,
                         required=False, help='Use precise orbits (True/False)')
     parser.add_argument('-t', type=str, dest='template', required=False,
                         help='Path to YAML input template file')
@@ -57,6 +57,7 @@ def cmdLineParse():
                         help='Filter strength')
 
     return parser
+
 
 
 def main(parser):
@@ -117,19 +118,24 @@ def main(parser):
         inputDict['topsinsar']['azimuthlooks'] = inps.alooks
     if inps.rlooks:
         inputDict['topsinsar']['rangelooks'] = inps.rlooks
-    print(inputDict)
-    dice.dict2topsAppXML(inputDict)
+    if not inps.poeorb:
+        del inputDict['topsinsar']['master']['orbit directory']
+        del inputDict['topsinsar']['slave']['orbit directory']
+    #print(inputDict)
+    xml = dice.dict2xml(inputDict)
+    dice.write_xml(xml)
 
     # NOTE: hopefully this changes to S3 storage soon
-    asf.write_wget_download_file(downloadList)
+    asf.write_download_urls(downloadList)
 
     # TODO: change these to use boto3 (or at least subprocess)
+    # Do this in single sync call
     os.chdir('../')
-    cmd = f'aws s3 mb s3://{intdir}'
-    dout.run_bash_command(cmd)
-    cmd = f'aws s3 sync {intdir} s3://{intdir}'
-    dout.run_bash_command(cmd)
-    print(f'Moved files to s3://{intdir}')
+    #cmd = f'aws s3 mb s3://{intdir}'
+    #dout.run_bash_command(cmd)
+    #cmd = f'aws s3 sync {intdir} s3://{intdir}'
+    #dout.run_bash_command(cmd)
+    #print(f'Moved files to s3://{intdir}')
 
 
 if __name__ == '__main__':

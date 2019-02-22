@@ -66,6 +66,10 @@ To pull the dem back down to your local computer::
 
   aws s3 sync s3://batch-uniongap/dem/ .
 
+To remove a subfolder and all contents::
+  
+  aws s3 rm s3://batch-uniongap/input/int-20180706-20180624 --recursive
+
 To launch the batch job::
 
   aws batch submit-job --job-name test-batch-array--job-queue isce-batch-c4-ondemand --job-definition run-batch:1 --array-properties size=3 --parameters 'batch_s3=s3://test-batch-array' --container-overrides 'environment=[{name=NASAUSER,value=CHANGE},{name=NASAPASS,value=CHANGE}]'

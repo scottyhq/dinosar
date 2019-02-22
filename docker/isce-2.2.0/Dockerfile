@@ -30,6 +30,9 @@ RUN apt update && \
     apt install -y zip curl libmotif-common libfftw3-3 python3 cython3 python3-scipy python3-matplotlib python3-h5py python3-gdal python3-pip aria2 && \
     rm -rf /var/lib/apt/lists/*
 
+# Install additional python packages 
+RUN pip3 --no-cache-dir install awscli
+
 # Setup ISCE environment
 ENV ISCE_ROOT /opt/isce-2.2.0
 ENV ISCE_HOME $ISCE_ROOT/isce
@@ -37,8 +40,9 @@ ENV PATH $ISCE_HOME/bin:$ISCE_HOME/applications:$PATH
 ENV PYTHONPATH $ISCE_ROOT:$ISCE_HOME/applications:$ISCE_HOME/component
 
 # Don't run container as root user
-RUN groupadd -r ubuntu && \
-    useradd -r -l -s /bin/bash -g ubuntu ubuntu
+# easiest compatibility w/ AWS Batch running ECS-optimized AMI is to set uid and gid to match
+RUN groupadd -r --gid 500 ubuntu && \
+    useradd -r -l -s /bin/bash -g ubuntu --uid 500 ubuntu
 USER ubuntu
 WORKDIR /home/ubuntu
 

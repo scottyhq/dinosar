@@ -1,11 +1,10 @@
-# .readthedocs.yml
-
+# Modeled after xarray 
+# https://github.com/pydata/xarray/blob/master/readthedocs.yml
 build:
-  image: latest
-
+    image: latest
+conda:
+    file: ci/requirements-docs.yml
 python:
-  version: 3.6
-  setup_py_install: false
-  pip_install: true
-
-requirements_file: requirements-dev.txt
+    version: 3.6
+    setup_py_install: true
+formats: []

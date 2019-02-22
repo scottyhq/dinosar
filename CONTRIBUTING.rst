@@ -1,7 +1,7 @@
 Code Conventions
 ----------------
 
-*dinosar* is designed to work with Python >3.6
+*dinosar* is designed to work with Python >3.6. As an open source project we encourage contributions! The information below will help get started, but for more information related to standard github workflows read through the excellent step-by-step contribution guide for the xarray project (http://xarray.pydata.org/en/stable/contributing.html). 
 
 Code should adhere to PEP8_.
 
@@ -24,6 +24,14 @@ Install from github with conda and pip::
   cd dinosar
   conda env create -f ci/requirements-py37.yml
   pip install -e .
+
+
+Run tests
+---------
+Run tests locally with pytest::
+
+  cd dinosar
+  pytest tests
 
 
 Preview documentation

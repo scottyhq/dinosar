@@ -24,7 +24,7 @@ def test_get_list():
     granules = [
         'S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA',
         'S1A_IW_SLC__1SSV_20150526T015345_20150526T015412_006086_007E23_34D6',
-        ]
+    ]
     paramDict = dict(granule_list=granules,
                      output='json')
     r = requests.get(baseurl, params=paramDict, verify=False, timeout=(5, 10))
@@ -72,8 +72,9 @@ def test_load_inventory():
 
 def test_get_orbit_url():
     """Get URL of precise orbit for a given granule."""
-    granule = 'S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA'
-    url = asf.get_orbit_url(granule)
+    gid = 'S1B_IW_SLC__1SDV_20171117T015310_20171117T015337_008315_00EB6C_40CA'
+    # url = asf.get_orbit_url_server(gid) Dont require server connection
+    url = asf.get_orbit_url_file(gid, inventory='tests/data/poeorb.txt')
 
     assert type(url) == str
     assert url.endswith('.EOF')
@@ -89,4 +90,5 @@ def test_get_slcs():
 
     assert type(urls) == list
     assert len(urls) == 1
-    assert urls[0] == 'https://datapool.asf.alaska.edu/SLC/SB/S1B_IW_SLC__1SDV_20180320T232821_20180320T232848_010121_01260A_0613.zip'
+    assert urls[0] == 'https://datapool.asf.alaska.edu/SLC/SB/\
+S1B_IW_SLC__1SDV_20180320T232821_20180320T232848_010121_01260A_0613.zip'
