@@ -15,7 +15,7 @@ It's recommended to install dinosar in an isolated python environment. See :ref:
 Requirements
 ------------
 
-- You'll need an institutional user agreement to run `ISCE software`_
+- `ISCE software`_ (>2.3.1) is open-source, but older versions and certain capabilities may require a signed user agreement.
 - You'll need a `NASA Earthdata`_ login to download SAR data from `ASF Vertex`_.
 - You'll need an AWS_ account to use AWS Batch functionality.
 - dinosar only works with Python>3.6.
@@ -56,16 +56,16 @@ This section assumes you are installing a dinosar for the first time. We are goi
     pip install dinosar
 
 
-To get the full functionality of dinosar, you will need to install ISCE software as a Docker container. Fortunately Docker is easy to install on most systems - see `Docker Installation guide`_. Once Docker is installed create a local ISCE image::
+dinosar has scripts to build ISCE software as a Docker container. This enables batch jobs on AWS or other clusters. Fortunately Docker is easy to install on most systems - see `Docker Installation guide`_. Once Docker is installed, navigate to the ISCE version you want to install within the `dinosar/docker/` folder and run a build script::
 
     DINODIR=`pip show dinosar | grep Location | cut -d':' -f2`
-    cd $DINODIR/docker
+    cd $DINODIR/docker/isce-2.3.1
     ./build.sh
 
 
 Now when you want to run ISCE, let Docker create a container from your image. By default this container will have access to all your system resources. **Unlike regular programs, docker containers are ephemeral and once closed all your data is deleted**, so be sure to map a local folder where you are working for data to persist. For example::
 
-    docker run -it --rm -v $PWD:/home/ubuntu dinosar/isce:v2.2.0 /bin/bash
+    docker run -it --rm -v $PWD:/home/ubuntu dinosar/isce:v2.3.1 /bin/bash
 
 Docker containers also require additional command line arguments if you have graphical programs that you want to use (like `mdx.py`). It's convenient to wrap a bash function in your `~.bashrc` file so that launching ISCE is easy::
 
@@ -77,11 +77,11 @@ Docker containers also require additional command line arguments if you have gra
       docker run -it --rm -e DISPLAY=$IP \
       -v $PWD:/home/ubuntu \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
-      dinosar/isce:v2.2.0 \
+      dinosar/isce:v2.3.1 \
       /bin/bash
   }
 
-Now in a folder prepared for processing an interferogram, run::
+The above function opens an interactive bash shell, so in a folder prepared for processing an interferogram, run::
 
     start_isce
     topsApp.py --steps 2>&1 | tee topsApp.log
@@ -91,7 +91,7 @@ For a tutorial that demonstrates a full workflow, see the `examples section <./e
 
 .. _`conda installer`: https://conda.io/miniconda.html#miniconda
 .. _`Docker Installation guide`: https://docs.docker.com/install/
-.. _`ISCE software`: https://winsar.unavco.org/software/isce
+.. _`ISCE software`: https://github.com/isce-framework/isce2
 .. _`NASA Earthdata`: https://urs.earthdata.nasa.gov
 .. _`ASF Vertex`: https://vertex.daac.asf.alaska.edu
 .. _AWS: https://aws.amazon.com
