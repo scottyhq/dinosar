@@ -37,7 +37,7 @@ ENV PYTHONPATH $ISCE_ROOT:$ISCE_HOME/applications:$ISCE_HOME/component
 
 # Don't run container as root user
 RUN groupadd -r ubuntu && \
-    useradd -r -l -s /bin/bash -g ubuntu ubuntu
+    useradd -u 1000 -r -l -s /bin/bash -g ubuntu ubuntu
 USER ubuntu
 WORKDIR /home/ubuntu
 
