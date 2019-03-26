@@ -18,10 +18,13 @@ import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import numpy as np
 import yaml
+import os
 
 
-def read_yaml_template(template='topsApp-template.yml'):
+def read_yaml_template(template=None):
     """Read yaml file."""
+    if template is None:
+        template = os.path.join(os.path.dirname(__file__), 'topsApp-template.yml')
     with open(template, 'r') as outfile:
         defaults = yaml.load(outfile)
 

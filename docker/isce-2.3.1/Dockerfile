@@ -26,7 +26,7 @@ FROM ubuntu:18.04 as run
 # Install run-time libraries
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt update && \
-    apt install -y zip curl libmotif-common libfftw3-3 python3 cython3 python3-scipy python3-matplotlib python3-h5py python3-gdal python3-pip aria2 && \
+    apt install -y zip curl libmotif-common libfftw3-3 python3 cython3 python3-scipy python3-matplotlib python3-h5py python3-gdal python3-pip aria2 python3-ipython && \
     rm -rf /var/lib/apt/lists/*
 
 # Setup ISCE environment
@@ -37,7 +37,7 @@ ENV PYTHONPATH $ISCE_ROOT:$ISCE_HOME/applications:$ISCE_HOME/component
 
 # Don't run container as root user
 RUN groupadd -r ubuntu && \
-    useradd -r -l -s /bin/bash -g ubuntu ubuntu
+    useradd -u 1000 -r -l -s /bin/bash -g ubuntu ubuntu
 USER ubuntu
 WORKDIR /home/ubuntu
 
