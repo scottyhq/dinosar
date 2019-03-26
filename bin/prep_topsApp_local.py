@@ -104,7 +104,9 @@ def main(parser):
 
     # Update input dictionary with argparse inputs
     inputDict['topsinsar']['master']['safe'] = inps.master_scenes
+    inputDict['topsinsar']['master']['output directory'] = 'masterdir'
     inputDict['topsinsar']['slave']['safe'] = inps.slave_scenes
+    inputDict['topsinsar']['slave']['output directory'] = 'slavedir'
     # Optional inputs
     # swaths, poeorb, dem, roi, gbox, alooks, rlooks, filtstrength
     if inps.swaths:
@@ -125,7 +127,7 @@ def main(parser):
     xml = dice.dict2xml(inputDict)
     dice.write_xml(xml)
     # Create a download file
-    asf.write_wget_download_file(downloadList)
+    asf.write_download_urls(downloadList)
     print(f'Generated download-links.txt and topsApp.xml in {intdir}')
 
 
