@@ -117,3 +117,4 @@ ENV/
 
 # mypy
 .mypy_cache/
+.bash_history
