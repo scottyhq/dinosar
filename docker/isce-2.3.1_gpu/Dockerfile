@@ -1,5 +1,5 @@
-# Scott Henderson (scottyh@uw.edu)
-# Date: July 2018
+# Craig Stringham (craig@capellaspace.com)
+# Date: May 2019
 FROM nvidia/cuda:9.2-devel-ubuntu18.04 as build
 
 WORKDIR /tmp
