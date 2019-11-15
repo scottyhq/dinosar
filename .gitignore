@@ -5,7 +5,7 @@ docs/source
 *.icloud
 tests/tmp/*
 isce-2.2.0.tar.bz2
-isce-2*
+#isce-2*
 isce-1*
 notebooks/
 muck/
