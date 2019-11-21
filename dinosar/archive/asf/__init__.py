@@ -276,7 +276,8 @@ def download_scene(downloadUrl):
 
 
 def query_asf(snwe, sat='SA', format='json',
-              orbit=None, start=None, stop=None, beam='IW'):
+              orbit=None, start=None, stop=None, beam='IW',
+              flightDirection=None):
     """Search ASF with [south, north, west, east] bounds.
 
     Saves result to local file: query_{sat}.{format}
@@ -322,6 +323,8 @@ def query_asf(snwe, sat='SA', format='json',
         data['start'] = start
     if stop:
         data['end'] = stop
+    if flightDirection:
+        data['flightDirection'] = flightDirection
 
     r = requests.get(baseurl, params=data, timeout=100)
     print(r.url)
