@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/scottyhq/dinosar.svg?branch=master)](https://travis-ci.org/scottyhq/dinosar)
 [![Documentation Status](https://readthedocs.org/projects/dinosar/badge/?version=latest)](https://dinosar.readthedocs.io/en/latest/?badge=latest)
+[![DOI](https://zenodo.org/badge/110758901.svg)](https://zenodo.org/badge/latestdoi/110758901)
 
 
 # dinoSAR (BETA!) 
