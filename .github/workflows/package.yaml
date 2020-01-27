@@ -2,7 +2,7 @@ name: Package
 
 on:
   pull_request:
-     branches: master
+    branches: master
   push:
     branches:
       - master
@@ -16,10 +16,10 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v1
 
-      - name: Set up Python 3.7
+      - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3.8
 
       - name: Setup Poetry Virtualenv Cache
         uses: actions/cache@v1
@@ -32,7 +32,7 @@ jobs:
       - name: Install Poetry
         uses: dschep/install-poetry-action@v1.3
         with:
-          version: 1.0.0
+          version: 1.0.2
           create_virtualenvs: true
 
       - name: Install Python Dependencies
