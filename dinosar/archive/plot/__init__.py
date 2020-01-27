@@ -14,10 +14,12 @@ import matplotlib.pyplot as plt
 # import matplotlib.patheffects as PathEffects
 from matplotlib.dates import YearLocator, MonthLocator  # DateFormatter
 from pandas.plotting import table
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-from cartopy.io.img_tiles import GoogleTiles
+
+# Make plots optional dependency (switch to geoviews)
+#import cartopy.crs as ccrs
+#import cartopy.feature as cfeature
+#from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+#from cartopy.io.img_tiles import GoogleTiles
 # from owslib.wmts import WebMapTileService
 
 

@@ -6,13 +6,13 @@ Subpackages
 
 .. toctree::
 
-    dinosar.archive.asf
-    dinosar.archive.plot
+   dinosar.archive.asf
+   dinosar.archive.plot
 
 Module contents
 ---------------
 
 .. automodule:: dinosar.archive
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

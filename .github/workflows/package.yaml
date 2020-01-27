@@ -1,0 +1,64 @@
+name: Package
+
+on:
+  pull_request:
+     branches: master
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v1
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Setup Poetry Virtualenv Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install Poetry
+        uses: dschep/install-poetry-action@v1.3
+        with:
+          version: 1.0.0
+          create_virtualenvs: true
+
+      - name: Install Python Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          poetry config --list
+          poetry install
+
+      - name: Code Quality
+        run: poetry run black . --check
+
+      - name: Test with Pytest
+        run: poetry run pytest --cov=dionsar --cov-report=xml
+
+      - name: Upload CodeCov Report for Badge
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} #required
+          file: ./coverage.xml #optional
+
+      - name: Build Package with Poetry
+        run: poetry build
+
+      - name: Push package to Test PyPi
+        # NOTE: can do this for a pull request and publish to actual PyPi after tagging release
+        if: startswith(github.ref, 'refs/tags')
+        run: |
+          poetry config repositories.testpypi https://test.pypi.org/legacy/
+          poetry publish -r testpypi -u ${{ secrets.TESTPYPI_USER }} -p ${{ secrets.TESTPYPI_PASS }}

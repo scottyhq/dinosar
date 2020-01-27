@@ -5,6 +5,6 @@ Module contents
 ---------------
 
 .. automodule:: dinosar.archive.asf
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

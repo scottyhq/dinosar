@@ -5,6 +5,6 @@ Module contents
 ---------------
 
 .. automodule:: dinosar.cloud.aws
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

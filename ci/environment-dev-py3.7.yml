@@ -1,0 +1,16 @@
+name: dinosar
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - geopandas
+  - matplotlib
+  - pyyaml
+  - lxml
+  - pytest
+  - sphinx
+  - sphinx_rtd_theme
+  - pytest-cov
+  - flake8
+  - black
+  - awscli

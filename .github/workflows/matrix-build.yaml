@@ -1,0 +1,30 @@
+name: Conda-Build
+
+ on:
+   pull_request:
+     branches: master
+
+ jobs:
+   conda:
+     name: ${{ matrix.os }}-${{ matrix.CONDA_ENV }}-build
+     runs-on: ${{ matrix.os }}
+     strategy:
+       matrix:
+         os: [macos-latest, ubuntu-latest]
+         CONDA_ENV: [3.6, 3.7, 3.8]
+     steps:
+       - uses: actions/checkout@v1
+
+       - name: Setup conda environment
+         run: |
+           export PATH="/usr/share/miniconda/bin:$PATH"
+           conda env create -n test_env --file ci/environment-dev-${{ matrix.CONDA_ENV }}.yml --quiet
+           source activate test_env
+           python -m pip install --no-deps -e .
+           conda list
+
+       - name: Running Tests
+         run: |
+           export PATH="/usr/share/miniconda/bin:$PATH"
+           source activate test_env
+           pytest --verbose --cov=dinosar --cov-config

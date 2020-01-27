@@ -8,11 +8,11 @@ VERSION=$1
 echo 'Creating release version $VERSION'
 
 # remake documentation with sphinx
-cd ..
-cd docs
-sphinx-apidoc -f --no-toc -o api/ ../dinosar
-make html
-cd ..
+#cd ..
+#cd docs
+#sphinx-apidoc -f --no-toc -o api/ ../dinosar
+#make html
+#cd ..
 
 # Create a new tagged release
 git tag $VERSION ; git push --tags

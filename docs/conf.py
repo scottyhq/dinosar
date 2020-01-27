@@ -12,7 +12,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-from dinosar._version import get_versions
+import dinosar
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../'))
@@ -21,7 +21,7 @@ sys.path.append(os.path.abspath('../dinosar'))
 # -- Project information -----------------------------------------------------
 
 project = 'dinosar'
-copyright = '2018, Scott Henderson'
+copyright = '2020, Scott Henderson'
 author = 'Scott Henderson'
 
 # The short X.Y version
@@ -29,8 +29,8 @@ author = 'Scott Henderson'
 # The full version, including alpha/beta/rc tags
 # release = '0.1.1'
 # Parse the version from versioneer:
-version = get_versions()['version'].rsplit('.', 1)[0]
-release = get_versions()['version']
+version = dinosar.__version__
+release = dinosar.__version__
 
 # -- General configuration ---------------------------------------------------
 

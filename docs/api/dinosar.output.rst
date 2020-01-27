@@ -5,6 +5,6 @@ Module contents
 ---------------
 
 .. automodule:: dinosar.output
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:
