@@ -10,16 +10,17 @@ on:
       - '*'
 
 jobs:
-  test:
+  poetry:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
+      - name: Setup Conda Environment
+        uses: goanpeca/setup-miniconda@v1
         with:
-          python-version: 3.8
+           environment-file: environment-py38.yml
+           activate-environment: dinosar
 
       - name: Setup Poetry Virtualenv Cache
         uses: actions/cache@v1
@@ -28,12 +29,6 @@ jobs:
           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Install Poetry
-        uses: dschep/install-poetry-action@v1.3
-        with:
-          version: 1.0.2
-          create_virtualenvs: true
 
       - name: Install Python Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
