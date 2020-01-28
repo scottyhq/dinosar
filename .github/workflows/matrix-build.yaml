@@ -19,8 +19,9 @@ jobs:
       - name: Setup Conda Environment
         uses: goanpeca/setup-miniconda@v1
         with:
-           environment-file: ci/environment-dev-${{ matrix.CONDA_ENV }}.yml
+           environment-file: ci/environment-dev-py${{ matrix.CONDA_ENV }}.yml
            activate-environment: dinosar
+           miniconda-version: 4.8.1
 
       - name: Install Dinosar
         shell: bash -l {0}
