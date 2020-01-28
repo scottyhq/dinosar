@@ -9,8 +9,8 @@ jobs:
     name: ${{ matrix.os }}-${{ matrix.CONDA_ENV }}-build
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         os: [macos-latest, ubuntu-latest]
         CONDA_ENV: [3.6, 3.7, 3.8]
     steps:
