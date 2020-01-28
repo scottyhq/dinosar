@@ -27,7 +27,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda --version
-          python -m pip install --no-deps -e .
+          python -m pip install --no-deps .
           conda list
 
       - name: Run PyTest

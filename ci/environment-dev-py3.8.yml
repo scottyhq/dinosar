@@ -8,8 +8,6 @@ dependencies:
   - pyyaml
   - lxml
   - pytest
-  - sphinx
-  - sphinx_rtd_theme
   - pytest-cov
   - flake8
   - black
