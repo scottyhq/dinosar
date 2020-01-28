@@ -21,7 +21,7 @@ jobs:
         with:
            environment-file: ci/environment-dev-py${{ matrix.CONDA_ENV }}.yml
            activate-environment: dinosar
-           miniconda-version: 4.8.1
+           miniconda-version: 4.7.12
 
       - name: Install Dinosar
         shell: bash -l {0}

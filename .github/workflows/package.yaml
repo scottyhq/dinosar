@@ -21,7 +21,7 @@ jobs:
         with:
            environment-file: environment-py38.yml
            activate-environment: dinosar
-           miniconda-version: 4.8.1
+           miniconda-version: 4.7.12
 
       - name: Setup Poetry Virtualenv Cache
         uses: actions/cache@v1
