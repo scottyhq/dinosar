@@ -18,6 +18,7 @@ Add common metadata fields to 'collection.json'?
 """
 import argparse
 import rasterio
+
 # import rasterio.features
 import ast
 import datetime
@@ -30,11 +31,17 @@ from collections import OrderedDict
 
 def cmdLineParse():
     """Command line parser."""
-    parser = argparse.ArgumentParser(description='create STAC metadata')
-    parser.add_argument('-i', type=str, dest='intDir', required=True,
-                        help='int- directory from topsApp2aws')
-    parser.add_argument('-c', type=str, dest='catalog', required=False,
-                        help='STAC catalog.json file')
+    parser = argparse.ArgumentParser(description="create STAC metadata")
+    parser.add_argument(
+        "-i",
+        type=str,
+        dest="intDir",
+        required=True,
+        help="int- directory from topsApp2aws",
+    )
+    parser.add_argument(
+        "-c", type=str, dest="catalog", required=False, help="STAC catalog.json file"
+    )
 
     return parser
 
@@ -53,32 +60,32 @@ def read_stac_json(stacFile):
 
 def write_stac_json(dictionary, stacFile):
     """Write python dictionary to STAC-compliant json."""
-    with open(stacFile, 'w') as fp:
+    with open(stacFile, "w") as fp:
         json.dump(dictionary, fp, indent=2)
 
 
 def filename2datetime(safeFile):
     """Get acquisition time in STAC-compliant format."""
-    timestr = safeFile.split('_')[5]
-    dt = datetime.datetime.strptime(timestr, '%Y%m%dT%H%M%S')
+    timestr = safeFile.split("_")[5]
+    dt = datetime.datetime.strptime(timestr, "%Y%m%dT%H%M%S")
 
-    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def update_catalog(catalog, intName):
     """Add new STAC item to STAC catalog."""
     # newline = {'child': 'item', 'href': itemJsonFile}
     # newline = {'rel': 'item', 'href': itemJsonFile}
-    href = '{0}/{0}.json'.format(intName)
-    newline = {'rel': 'item', 'href': href}
+    href = "{0}/{0}.json".format(intName)
+    newline = {"rel": "item", "href": href}
     catalogDict = read_stac_json(catalog)
-    catalogDict['links'].append(newline)
+    catalogDict["links"].append(newline)
     write_stac_json(catalogDict, catalog)
 
 
 def publish_to_s3(s3Bucket):
     """Push json files to s3 bucket."""
-    print('TODO')
+    print("TODO")
 
 
 def read_topsAppxml(xmlFile):
@@ -87,20 +94,20 @@ def read_topsAppxml(xmlFile):
     root = tree.getroot()
 
     topsParams = OrderedDict()
-    for A in ['master', 'slave']:
+    for A in ["master", "slave"]:
         topsParams[A] = OrderedDict()
         querySafe = f".//component[@name='{A}']/property[@name='safe']"
         val = root.findall(querySafe)[0].text
-        if val.startswith('['):
+        if val.startswith("["):
             val = ast.literal_eval(val)
-        topsParams[A]['safe'] = val
+        topsParams[A]["safe"] = val
 
     # Read specific topsinsar properties
     # list = ast.literal_eval("[1,2,3]") #to convert lists in strings
-    props = ['unwrappername', 'swaths', 'geocodeboundingbox', 'demfilename']
+    props = ["unwrappername", "swaths", "geocodeboundingbox", "demfilename"]
     for P in props:
         val = root.findall(f".//property[@name='{P}']")[0].text
-        if val.startswith('['):
+        if val.startswith("["):
             val = ast.literal_eval(val)
         topsParams[P] = val
 
@@ -113,20 +120,20 @@ def read_isce_log(isceLog):
 
     def get_value(lines, prefix):
         tmp = [li for li in lines if li.startswith(prefix)]
-        return tmp[0].split('=')[1].strip()
+        return tmp[0].split("=")[1].strip()
 
-    with open(isceLog, 'r') as log:
+    with open(isceLog, "r") as log:
         lines = log.readlines()
 
-    isceMeta['procDate'] = lines[0].split(' - ')[0]
-    isceMeta['isceVersion'] = lines[0].split(' - ')[-1].split(',')[0]
-    isceMeta['svnVersion'] = lines[0].split(' - ')[-1].split(',')[1]
+    isceMeta["procDate"] = lines[0].split(" - ")[0]
+    isceMeta["isceVersion"] = lines[0].split(" - ")[-1].split(",")[0]
+    isceMeta["svnVersion"] = lines[0].split(" - ")[-1].split(",")[1]
 
-    prefix = 'master.sensor.ascendingnodetime'
-    isceMeta['masterDate'] = get_value(lines, prefix)
+    prefix = "master.sensor.ascendingnodetime"
+    isceMeta["masterDate"] = get_value(lines, prefix)
 
-    prefix = 'slave.sensor.ascendingnodetime'
-    isceMeta['slaveDate'] = get_value(lines, prefix)
+    prefix = "slave.sensor.ascendingnodetime"
+    isceMeta["slaveDate"] = get_value(lines, prefix)
 
     return isceMeta
 
@@ -134,17 +141,17 @@ def read_isce_log(isceLog):
 def add_topsParams(intDir, stac_item):
     """Add metadata from isce metadata to stac item."""
     # dateStr = filename2datetime(topsParams['master']['safe'][0])
-    topsParams = read_topsAppxml(os.path.join(intDir, 'topsApp.xml'))
-    isceMeta = read_isce_log(os.path.join(intDir, 'isce.log'))
+    topsParams = read_topsAppxml(os.path.join(intDir, "topsApp.xml"))
+    isceMeta = read_isce_log(os.path.join(intDir, "isce.log"))
     topsParams.update(isceMeta)
-    #Warning case and whitespace sensitive...
-    stac_item['properties']['isce:master'] = topsParams['master']['safe']
-    stac_item['properties']['isce:slave'] = topsParams['slave']['safe']
-    stac_item['properties']['isce:unwrapper'] = topsParams['unwrappername']
-    stac_item['properties']['isce:swaths'] = topsParams['swaths']
-    stac_item['properties']['isce:dem'] = topsParams['demfilename']
-    stac_item['properties']['isce:procdate'] = topsParams['procDate']
-    stac_item['properties']['isce:isceversion'] = topsParams['isceVersion']
+    # Warning case and whitespace sensitive...
+    stac_item["properties"]["isce:master"] = topsParams["master"]["safe"]
+    stac_item["properties"]["isce:slave"] = topsParams["slave"]["safe"]
+    stac_item["properties"]["isce:unwrapper"] = topsParams["unwrappername"]
+    stac_item["properties"]["isce:swaths"] = topsParams["swaths"]
+    stac_item["properties"]["isce:dem"] = topsParams["demfilename"]
+    stac_item["properties"]["isce:procdate"] = topsParams["procDate"]
+    stac_item["properties"]["isce:isceversion"] = topsParams["isceVersion"]
 
     return stac_item
 
@@ -164,92 +171,94 @@ def create_stac_json(intDir, catalog):
     Assumes EPSG 4326
     """
     stac_catalog = read_stac_json(catalog)
-    catalogURL = os.path.split(stac_catalog['links'][0]['href'])[0]
-    s3Bucket = catalogURL.split('.')[0].split('/')[-1]
+    catalogURL = os.path.split(stac_catalog["links"][0]["href"])[0]
+    s3Bucket = catalogURL.split(".")[0].split("/")[-1]
     s3URL = "s3://" + s3Bucket
 
     stac_item = OrderedDict()
-    stac_item['type'] = 'Feature'
+    stac_item["type"] = "Feature"
     # NOTE: should be unique ID (e.g. path, dates)
-    stac_item['id'] = os.path.basename(intDir)
+    stac_item["id"] = os.path.basename(intDir)
 
-    inFile = 'amplitude-cog-rgb.tif'
+    inFile = "amplitude-cog-rgb.tif"
     with rasterio.open(os.path.join(intDir, inFile), nodata=0.0) as ds:
         bbox = list(ds.bounds)
 
-    stac_item['bbox'] = bbox
-    stac_item['geometry'] = OrderedDict()
-    stac_item['geometry']['type'] = 'Polygon'
-    stac_item['geometry']['coordinates'] = [[
-                                    [bbox[0], bbox[1]],
-                                    [bbox[2], bbox[1]],
-                                    [bbox[2], bbox[3]],
-                                    [bbox[0], bbox[3]],
-                                    [bbox[0], bbox[1]],
-                                    ]]
+    stac_item["bbox"] = bbox
+    stac_item["geometry"] = OrderedDict()
+    stac_item["geometry"]["type"] = "Polygon"
+    stac_item["geometry"]["coordinates"] = [
+        [
+            [bbox[0], bbox[1]],
+            [bbox[2], bbox[1]],
+            [bbox[2], bbox[3]],
+            [bbox[0], bbox[3]],
+            [bbox[0], bbox[1]],
+        ]
+    ]
 
-    stac_item['properties'] = OrderedDict()
-    stac_item['properties']['provider'] = 'UW Geodesy Lab'
+    stac_item["properties"] = OrderedDict()
+    stac_item["properties"]["provider"] = "UW Geodesy Lab"
     # Use master date for datetime
     intName = os.path.basename(intDir)
-    outfile = intName + '.json'
-    timestr = intName.split('-')[1]
-    dt = datetime.datetime.strptime(timestr, '%Y%m%d')
-    dateStr = dt.strftime('%Y-%m-%dT%H:%M:%SZ')
-    stac_item['properties']['datetime'] = dateStr
+    outfile = intName + ".json"
+    timestr = intName.split("-")[1]
+    dt = datetime.datetime.strptime(timestr, "%Y%m%d")
+    dateStr = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    stac_item["properties"]["datetime"] = dateStr
     # Removed from Item since this is defined at catalog level
     # stac_item['properties']['license'] = 'CC-BY-SA-3.0'
 
     # URL to this JSON file
-    stac_item['links'] = OrderedDict()
-    stac_item['links']['self'] = OrderedDict()
-    stac_item['links']['self']['rel'] = 'self'
-    stac_item['links']['self']['href'] = f'{catalogURL}/{intName}/{outfile}'
+    stac_item["links"] = OrderedDict()
+    stac_item["links"]["self"] = OrderedDict()
+    stac_item["links"]["self"]["rel"] = "self"
+    stac_item["links"]["self"]["href"] = f"{catalogURL}/{intName}/{outfile}"
 
-    stac_item['links']['catalog'] = OrderedDict()
-    stac_item['links']['catalog']['rel'] = 'catalog'
-    stac_item['links']['catalog']['href'] = catalogURL + '/catalog.json'
+    stac_item["links"]["catalog"] = OrderedDict()
+    stac_item["links"]["catalog"]["rel"] = "catalog"
+    stac_item["links"]["catalog"]["href"] = catalogURL + "/catalog.json"
 
     # Can implement later...
     # stac_item['links']['collection'] = OrderedDict()
     # stac_item['links']['collection']['rel'] = 'collection'
     # stac_item['links']['collection']['href']
 
-    thumbnail = inFile.replace('.tif', '-thumb.jpeg')
-    stac_item['assets'] = OrderedDict()
-    stac_item['assets']['thumbnail'] = OrderedDict()
+    thumbnail = inFile.replace(".tif", "-thumb.jpeg")
+    stac_item["assets"] = OrderedDict()
+    stac_item["assets"]["thumbnail"] = OrderedDict()
     # stac_item['assets']['thumbnail']['href'] = f'{catalogURL}/{intDir}/{thumbnail}'
-    stac_item['assets']['thumbnail']['href'] = thumbnail
-    stac_item['assets']['thumbnail']['type'] = 'jpeg'
+    stac_item["assets"]["thumbnail"]["href"] = thumbnail
+    stac_item["assets"]["thumbnail"]["type"] = "jpeg"
 
     # Add pre-rendered RGB images
-    for im in ['coherence-cog-rgb',
-               'unwrapped-phase-cog-rgb',
-               'amplitude-cog-rgb']:
-        stac_item['assets'][im] = OrderedDict()
-        stac_item['assets'][im]['href'] = im + '.tif'
-        stac_item['assets'][im]['type'] = 'GeoTiff'
-        stac_item['assets'][im]['cog'] = 'True'
+    for im in ["coherence-cog-rgb", "unwrapped-phase-cog-rgb", "amplitude-cog-rgb"]:
+        stac_item["assets"][im] = OrderedDict()
+        stac_item["assets"][im]["href"] = im + ".tif"
+        stac_item["assets"][im]["type"] = "GeoTiff"
+        stac_item["assets"][im]["cog"] = "True"
 
     # Preview image chosen by 'format' key
-    stac_item['assets']['unwrapped-phase-cog-rgb']['format'] = 'cog'
+    stac_item["assets"]["unwrapped-phase-cog-rgb"]["format"] = "cog"
 
     # Add single-band images
-    images = ['amplitude',
-              'coherence',
-              'elevation',
-              'heading',
-              'incidence',
-              'unwrapped-phase']
+    images = [
+        "amplitude",
+        "coherence",
+        "elevation",
+        "heading",
+        "incidence",
+        "unwrapped-phase",
+    ]
     for im in images:
-        stac_item['assets'][im] = OrderedDict()
+        stac_item["assets"][im] = OrderedDict()
         # stac_item['assets'][im]['href'] = s3URL + '/' + im + '-cog.tif'
-        stac_item['assets'][im]['href'] = im + '-cog.tif'
-        stac_item['assets'][im]['type'] = 'GeoTiff'
-        stac_item['assets'][im]['cog'] = 'True'
+        stac_item["assets"][im]["href"] = im + "-cog.tif"
+        stac_item["assets"][im]["type"] = "GeoTiff"
+        stac_item["assets"][im]["cog"] = "True"
 
     # Earth-obervation profile information is additional
-    stac_item['properties']['eo:epsg'] = 4326
+    stac_item["properties"]["eo:epsg"] = 4326
 
     # Optionally store topsApp and ISCE metadata
 
@@ -262,13 +271,13 @@ def main(parser):
     stacDict = create_stac_json(args.intDir, args.catalog)
     stacDict = add_topsParams(args.intDir, stacDict)
     intName = os.path.basename(args.intDir)
-    outfile = f'{args.intDir}/{intName}.json'
+    outfile = f"{args.intDir}/{intName}.json"
     write_stac_json(stacDict, outfile)
     update_catalog(args.catalog, intName)
-    print(f'Wrote {outfile}, updated {args.catalog}')
+    print(f"Wrote {outfile}, updated {args.catalog}")
 
 
 # Get interferogram name from command line argument
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = cmdLineParse()
     main(parser)

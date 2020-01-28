@@ -42,19 +42,19 @@ def inventory2s3(gf, s3bucket):
     filenames = gf.downloadUrl.tolist()
     write_download_urls(filenames)
 
-    nasauser = os.environ['NASAUSER']
-    nasapass = os.environ['NASAPASS']
-    os.mkdir('tmp')
-    os.chdir('tmp')
-    cmd = f'wget -q -nc --user={nasauser} --password={nasapass} \
-    --input-file=download-links.txt'
+    nasauser = os.environ["NASAUSER"]
+    nasapass = os.environ["NASAPASS"]
+    os.mkdir("tmp")
+    os.chdir("tmp")
+    cmd = f"wget -q -nc --user={nasauser} --password={nasapass} \
+    --input-file=download-links.txt"
     # NOTE: don't print this command since it contains password info.
     run_bash_command(cmd)
 
-    cmd = f'aws s3 sync . s3://{s3bucket}'
+    cmd = f"aws s3 sync . s3://{s3bucket}"
     run_bash_command(cmd)
-    os.chdir('tmp')
-    shutil.rmtree('tmp')
+    os.chdir("tmp")
+    shutil.rmtree("tmp")
 
 
 def load_asf_json(jsonfile):
@@ -79,16 +79,13 @@ def load_asf_json(jsonfile):
 
     df = pd.DataFrame(meta)
     polygons = df.stringFootprint.apply(shapely.wkt.loads)
-    gf = gpd.GeoDataFrame(df,
-                          crs={'init': 'epsg:4326'},
-                          geometry=polygons)
+    gf = gpd.GeoDataFrame(df, crs={"init": "epsg:4326"}, geometry=polygons)
 
-    gf['timeStamp'] = pd.to_datetime(gf.sceneDate, format='%Y-%m-%d %H:%M:%S')
-    gf['sceneDateString'] = gf.timeStamp.apply(
-        lambda x: x.strftime('%Y-%m-%d'))
-    gf['dateStamp'] = pd.to_datetime(gf.sceneDateString)
-    gf['utc'] = gf.timeStamp.apply(lambda x: x.strftime('%H:%M:%S'))
-    gf['orbitCode'] = gf.relativeOrbit.astype('category').cat.codes
+    gf["timeStamp"] = pd.to_datetime(gf.sceneDate, format="%Y-%m-%d %H:%M:%S")
+    gf["sceneDateString"] = gf.timeStamp.apply(lambda x: x.strftime("%Y-%m-%d"))
+    gf["dateStamp"] = pd.to_datetime(gf.sceneDateString)
+    gf["utc"] = gf.timeStamp.apply(lambda x: x.strftime("%H:%M:%S"))
+    gf["orbitCode"] = gf.relativeOrbit.astype("category").cat.codes
 
     return gf
 
@@ -106,23 +103,23 @@ def summarize_orbits(gf):
 
     """
     for orb in gf.relativeOrbit.unique():
-        df = gf.query('relativeOrbit == @orb')
-        gb = df.groupby('sceneDateString')
+        df = gf.query("relativeOrbit == @orb")
+        gb = df.groupby("sceneDateString")
         nFrames = gb.granuleName.count()
-        df = df.loc[:, ['sceneDateString', 'dateStamp', 'platform']]
+        df = df.loc[:, ["sceneDateString", "dateStamp", "platform"]]
         # Only keep one frame per date
-        DF = df.drop_duplicates('sceneDateString').reset_index(drop=True)
-        DF.sort_values('sceneDateString', inplace=True)
+        DF = df.drop_duplicates("sceneDateString").reset_index(drop=True)
+        DF.sort_values("sceneDateString", inplace=True)
         DF.reset_index(inplace=True, drop=True)
         timeDeltas = DF.dateStamp.diff()
-        DF['dt'] = timeDeltas.dt.days
-        DF.loc[0, 'dt'] = 0
-        DF['dt'] = DF.dt.astype('i2')
-        DF['nFrames'] = nFrames.values
-        DF.drop('dateStamp', axis=1, inplace=True)
+        DF["dt"] = timeDeltas.dt.days
+        DF.loc[0, "dt"] = 0
+        DF["dt"] = DF.dt.astype("i2")
+        DF["nFrames"] = nFrames.values
+        DF.drop("dateStamp", axis=1, inplace=True)
         # DF.set_index('date') # convert to datetime difference
-        outFile = 'acquisitions_{}.csv'.format(orb)
-        print(f'Saving {outFile} ...')
+        outFile = "acquisitions_{}.csv".format(orb)
+        print(f"Saving {outFile} ...")
         DF.to_csv(outFile)
 
 
@@ -138,15 +135,15 @@ def save_geojson_footprints(gf):
         a pandas geodataframe from load_asf_json
 
     """
-    attributes = ('granuleName', 'downloadUrl', 'geometry')
-    gb = gf.groupby(['relativeOrbit', 'sceneDateString'])
-    S = gf.groupby('relativeOrbit').sceneDateString.unique()
+    attributes = ("granuleName", "downloadUrl", "geometry")
+    gb = gf.groupby(["relativeOrbit", "sceneDateString"])
+    S = gf.groupby("relativeOrbit").sceneDateString.unique()
     for orbit, dateList in S.iteritems():
         os.makedirs(orbit)
         for date in dateList:
             dftmp = gf.loc[gb.groups[(orbit, date)], attributes].reset_index(drop=True)
-            outname = os.path.join(orbit, date+'.geojson')
-            dftmp.to_file(outname, driver='GeoJSON')
+            outname = os.path.join(orbit, date + ".geojson")
+            dftmp.to_file(outname, driver="GeoJSON")
 
 
 def summarize_inventory(gf):
@@ -165,18 +162,18 @@ def summarize_inventory(gf):
 
     """
     dfS = pd.DataFrame(index=gf.relativeOrbit.unique())
-    dfS['Start'] = gf.groupby('relativeOrbit').sceneDateString.min()
-    dfS['Stop'] = gf.groupby('relativeOrbit').sceneDateString.max()
-    dfS['Dates'] = gf.groupby('relativeOrbit').sceneDateString.nunique()
-    dfS['Frames'] = gf.groupby('relativeOrbit').sceneDateString.count()
-    dfS['Direction'] = gf.groupby('relativeOrbit').flightDirection.first()
-    dfS['UTC'] = gf.groupby('relativeOrbit').utc.first()
+    dfS["Start"] = gf.groupby("relativeOrbit").sceneDateString.min()
+    dfS["Stop"] = gf.groupby("relativeOrbit").sceneDateString.max()
+    dfS["Dates"] = gf.groupby("relativeOrbit").sceneDateString.nunique()
+    dfS["Frames"] = gf.groupby("relativeOrbit").sceneDateString.count()
+    dfS["Direction"] = gf.groupby("relativeOrbit").flightDirection.first()
+    dfS["UTC"] = gf.groupby("relativeOrbit").utc.first()
     dfS.sort_index(inplace=True, ascending=False)
-    dfS.index.name = 'Orbit'
-    dfS.to_csv('inventory_summary.csv')
+    dfS.index.name = "Orbit"
+    dfS.to_csv("inventory_summary.csv")
     print(dfS)
-    size = dfS.Frames.sum()*5 / 1e3
-    print('Approximate Archive size = {} Tb'.format(size))
+    size = dfS.Frames.sum() * 5 / 1e3
+    print("Approximate Archive size = {} Tb".format(size))
 
 
 def merge_inventories(s1Afile, s1Bfile):
@@ -198,7 +195,7 @@ def merge_inventories(s1Afile, s1Bfile):
         A geopandas GeoDataFrame
 
     """
-    print('Merging S1A and S1B inventories')
+    print("Merging S1A and S1B inventories")
     gfA = load_asf_json(s1Afile)
     gfB = load_asf_json(s1Bfile)
     gf = pd.concat([gfA, gfB])
@@ -207,7 +204,7 @@ def merge_inventories(s1Afile, s1Bfile):
     return gf
 
 
-def save_inventory(gf, outname='query.geojson', format='GeoJSON'):
+def save_inventory(gf, outname="query.geojson", format="GeoJSON"):
     """Save inventory GeoDataFrame as a GeoJSON file.
 
     Parameters
@@ -225,9 +222,9 @@ def save_inventory(gf, outname='query.geojson', format='GeoJSON'):
         os.remove(outname)
     # NOTE: can't save pandas Timestamps!
     # ValueError: Invalid field type <class 'pandas._libs.tslib.Timestamp'>
-    gf.drop(['timeStamp', 'dateStamp'], axis=1, inplace=True)
+    gf.drop(["timeStamp", "dateStamp"], axis=1, inplace=True)
     gf.to_file(outname, driver=format)
-    print('Saved inventory: ', outname)
+    print("Saved inventory: ", outname)
 
 
 def load_inventory(inventoryJSON):
@@ -245,15 +242,13 @@ def load_inventory(inventoryJSON):
 
     """
     gf = gpd.read_file(inventoryJSON)
-    gf['timeStamp'] = pd.to_datetime(gf.sceneDate,
-                                     format='%Y-%m-%d %H:%M:%S')
-    gf['sceneDateString'] = gf.timeStamp.apply(
-        lambda x: x.strftime('%Y-%m-%d'))
-    gf['dateStamp'] = pd.to_datetime(gf.sceneDateString)
-    gf['utc'] = gf.timeStamp.apply(lambda x: x.strftime('%H:%M:%S'))
-    gf['relativeOrbit'] = gf.relativeOrbit.astype('int')
-    gf.sort_values('relativeOrbit', inplace=True)
-    gf['orbitCode'] = gf.relativeOrbit.astype('category').cat.codes
+    gf["timeStamp"] = pd.to_datetime(gf.sceneDate, format="%Y-%m-%d %H:%M:%S")
+    gf["sceneDateString"] = gf.timeStamp.apply(lambda x: x.strftime("%Y-%m-%d"))
+    gf["dateStamp"] = pd.to_datetime(gf.sceneDateString)
+    gf["utc"] = gf.timeStamp.apply(lambda x: x.strftime("%H:%M:%S"))
+    gf["relativeOrbit"] = gf.relativeOrbit.astype("int")
+    gf.sort_values("relativeOrbit", inplace=True)
+    gf["orbitCode"] = gf.relativeOrbit.astype("category").cat.codes
 
     return gf
 
@@ -270,14 +265,21 @@ def download_scene(downloadUrl):
         A valid download URL for an ASF granule.
 
     """
-    print('Requires ~/.netrc file')
-    cmd = 'wget -nc -c {downloadUrl}'
+    print("Requires ~/.netrc file")
+    cmd = "wget -nc -c {downloadUrl}"
     run_bash_command(cmd)
 
 
-def query_asf(snwe, sat='SA', format='json',
-              orbit=None, start=None, stop=None, beam='IW',
-              flightDirection=None):
+def query_asf(
+    snwe,
+    sat="SA",
+    format="json",
+    orbit=None,
+    start=None,
+    stop=None,
+    beam="IW",
+    flightDirection=None,
+):
     """Search ASF with [south, north, west, east] bounds.
 
     Saves result to local file: query_{sat}.{format}
@@ -305,55 +307,56 @@ def query_asf(snwe, sat='SA', format='json',
     easiest input
 
     """
-    print(f'Querying ASF Vertex for {sat}...')
+    print(f"Querying ASF Vertex for {sat}...")
     miny, maxy, minx, maxx = snwe
     roi = shapely.geometry.box(minx, miny, maxx, maxy)
     polygonWKT = roi.to_wkt()
 
-    baseurl = 'https://api.daac.asf.alaska.edu/services/search/param'
+    baseurl = "https://api.daac.asf.alaska.edu/services/search/param"
     # relativeOrbit=$ORBIT
-    data = dict(intersectsWith=polygonWKT,
-                platform=sat,
-                processingLevel='SLC',
-                beamMode=beam,
-                output=format)
+    data = dict(
+        intersectsWith=polygonWKT,
+        platform=sat,
+        processingLevel="SLC",
+        beamMode=beam,
+        output=format,
+    )
     if orbit:
-        data['relativeOrbit'] = orbit
+        data["relativeOrbit"] = orbit
     if start:
-        data['start'] = start
+        data["start"] = start
     if stop:
-        data['end'] = stop
+        data["end"] = stop
     if flightDirection:
-        data['flightDirection'] = flightDirection
+        data["flightDirection"] = flightDirection
 
     r = requests.get(baseurl, params=data, timeout=100)
     print(r.url)
     # Save Directly to dataframe
     # df = pd.DataFrame(r.json()[0])
-    with open(f'query_{sat}.{format}', 'w') as j:
+    with open(f"query_{sat}.{format}", "w") as j:
         j.write(r.text)
 
 
-def get_orbit_url_file(granuleName,
-                       inventory='poeorb.txt',
-                       url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+def get_orbit_url_file(
+    granuleName, inventory="poeorb.txt", url="https://s1qc.asf.alaska.edu/aux_poeorb"
+):
     """Find and construct orbit URL from directory listing."""
     sat = granuleName[:3]
     date = granuleName[17:25]
-    print(f'finding precise orbit for {sat}, {date}')
-    df = pd.read_csv(inventory, header=None, names=['orbit'])
+    print(f"finding precise orbit for {sat}, {date}")
+    df = pd.read_csv(inventory, header=None, names=["orbit"])
     dfSat = df[df.orbit.str.startswith(sat)].copy()
-    dayBefore = pd.to_datetime(date) - pd.to_timedelta(1, unit='d')
-    dayBeforeStr = dayBefore.strftime('%Y%m%d')
-    dfSat.loc[:, 'startTime'] = dfSat.orbit.str[42:50]
-    match = dfSat.loc[dfSat.startTime == dayBeforeStr, 'orbit'].values[0]
-    orbitUrl = f'{url}/{match}'
+    dayBefore = pd.to_datetime(date) - pd.to_timedelta(1, unit="d")
+    dayBeforeStr = dayBefore.strftime("%Y%m%d")
+    dfSat.loc[:, "startTime"] = dfSat.orbit.str[42:50]
+    match = dfSat.loc[dfSat.startTime == dayBeforeStr, "orbit"].values[0]
+    orbitUrl = f"{url}/{match}"
 
     return orbitUrl
 
 
-def get_orbit_url_server(granuleName,
-                         url='https://s1qc.asf.alaska.edu/aux_poeorb'):
+def get_orbit_url_server(granuleName, url="https://s1qc.asf.alaska.edu/aux_poeorb"):
     """Retrieve precise orbit file for a specific Sentinel-1 granule.
 
     Precise orbits available ~3 weeks after aquisition.
@@ -374,17 +377,17 @@ def get_orbit_url_server(granuleName,
     """
     sat = granuleName[:3]
     date = granuleName[17:25]
-    print(f'retrieving precise orbit URL for {sat}, {date}')
+    print(f"retrieving precise orbit URL for {sat}, {date}")
     r = requests.get(url)
     webpage = html.fromstring(r.content)
-    orbits = webpage.xpath('//a/@href')
+    orbits = webpage.xpath("//a/@href")
     df = pd.DataFrame(dict(orbit=orbits))
     dfSat = df[df.orbit.str.startswith(sat)].copy()
-    dayBefore = pd.to_datetime(date) - pd.to_timedelta(1, unit='d')
-    dayBeforeStr = dayBefore.strftime('%Y%m%d')
-    dfSat.loc[:, 'startTime'] = dfSat.orbit.str[42:50]
-    match = dfSat.loc[dfSat.startTime == dayBeforeStr, 'orbit'].values[0]
-    orbitUrl = f'{url}/{match}'
+    dayBefore = pd.to_datetime(date) - pd.to_timedelta(1, unit="d")
+    dayBeforeStr = dayBefore.strftime("%Y%m%d")
+    dfSat.loc[:, "startTime"] = dfSat.orbit.str[42:50]
+    match = dfSat.loc[dfSat.startTime == dayBeforeStr, "orbit"].values[0]
+    orbitUrl = f"{url}/{match}"
 
     return orbitUrl
 
@@ -392,12 +395,12 @@ def get_orbit_url_server(granuleName,
 def get_slc_names(gf, dateStr, relativeOrbit):
     """return just filenames rather than urls"""
     try:
-        print(f'retrieving SLC.zip for track {relativeOrbit}, {dateStr}')
-        GF = gf.query('relativeOrbit == @relativeOrbit')
+        print(f"retrieving SLC.zip for track {relativeOrbit}, {dateStr}")
+        GF = gf.query("relativeOrbit == @relativeOrbit")
         GF = GF.loc[GF.dateStamp == dateStr]
         filenames = GF.fileName.tolist()
     except Exception as e:
-        print('ERROR retrieving scenes, double check dates!')
+        print("ERROR retrieving scenes, double check dates!")
         print(e)
         pass
 
@@ -423,12 +426,12 @@ def get_slc_urls(gf, dateStr, relativeOrbit):
 
     """
     try:
-        print(f'retrieving SLC url for track {relativeOrbit}, {dateStr}')
-        GF = gf.query('relativeOrbit == @relativeOrbit')
+        print(f"retrieving SLC url for track {relativeOrbit}, {dateStr}")
+        GF = gf.query("relativeOrbit == @relativeOrbit")
         GF = GF.loc[GF.dateStamp == dateStr]
         filenames = GF.downloadUrl.tolist()
     except Exception as e:
-        print('ERROR retrieving scenes, double check dates!')
+        print("ERROR retrieving scenes, double check dates!")
         print(e)
         pass
 
@@ -447,7 +450,7 @@ def write_download_urls(fileList):
         list of download url strings
 
     """
-    with open('download-links.txt', 'w') as f:
+    with open("download-links.txt", "w") as f:
         f.write("\n".join(fileList))
 
 
@@ -492,10 +495,10 @@ def snwe2file(snwe):
     """
     S, N, W, E = snwe
     roi = box(W, S, E, N)
-    with open('snwe.json', 'w') as j:
+    with open("snwe.json", "w") as j:
         json.dump(mapping(roi), j)
-    with open('snwe.wkt', 'w') as w:
+    with open("snwe.wkt", "w") as w:
         w.write(roi.to_wkt())
-    with open('snwe.txt', 'w') as t:
-        snweList = '[{0:.3f}, {1:.3f}, {2:.3f}, {3:.3f}]'.format(S, N, W, E)
+    with open("snwe.txt", "w") as t:
+        snweList = "[{0:.3f}, {1:.3f}, {2:.3f}, {3:.3f}]".format(S, N, W, E)
         t.write(snweList)

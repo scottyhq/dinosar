@@ -1,6 +1,7 @@
 """Dinosar."""
 
 import pkg_resources
+
 # https://github.com/python-poetry/poetry/issues/144#issuecomment-559793020
 def get_version():
     try:
@@ -15,6 +16,6 @@ def get_version():
 
 __version__ = get_version()
 
-__all__ = ['archive', 'cloud', 'isce', 'output']
+__all__ = ["archive", "cloud", "isce", "output"]
 
 from . import archive, cloud, isce, output

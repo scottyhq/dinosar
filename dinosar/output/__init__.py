@@ -30,11 +30,11 @@ def make_rgb(infile, cptfile, outfile):
     """
     # outfile = infile[:-4] + '-rgb.tif'
     # -alpha
-    cmd = f'gdaldem color-relief {infile} {cptfile} {outfile}'
+    cmd = f"gdaldem color-relief {infile} {cptfile} {outfile}"
     run_bash_command(cmd)
 
 
-def make_thumbnail(infile, percent=5, format='JPEG'):
+def make_thumbnail(infile, percent=5, format="JPEG"):
     """Make a JPEG or PNG thumbnail - percent of full-size image.
 
     Parameters
@@ -48,9 +48,9 @@ def make_thumbnail(infile, percent=5, format='JPEG'):
 
     """
     suffix = format.lower()
-    outfile = infile[:-4] + f'-thumb.{suffix}'
-    cmd = f'gdal_translate -of {format} -r cubic -outsize \
-            {percent}% 0 {infile} {outfile}'
+    outfile = infile[:-4] + f"-thumb.{suffix}"
+    cmd = f"gdal_translate -of {format} -r cubic -outsize \
+            {percent}% 0 {infile} {outfile}"
     run_bash_command(cmd)
 
 
@@ -65,7 +65,7 @@ def make_leaflet_tiles(infile):
         single-band raster file recognized by GDAL
 
     """
-    cmd = f'gdal2tiles.py -w leaflet -z 6-12 {infile}'
+    cmd = f"gdal2tiles.py -w leaflet -z 6-12 {infile}"
     run_bash_command(cmd)
 
 
@@ -80,7 +80,7 @@ def extract_band(infile, band, outfile):
         single-band raster file recognized by GDAL
 
     """
-    cmd = f'gdal_translate -of VRT -b {band} -a_nodata 0.0 {infile} {outfile}'
+    cmd = f"gdal_translate -of VRT -b {band} -a_nodata 0.0 {infile} {outfile}"
     run_bash_command(cmd)
 
 
@@ -90,7 +90,7 @@ def make_overviews(infile):
     Currently, gdal script gdaladdo is called to do this.
 
     """
-    cmd = f'gdaladdo {infile} 2 4 8 16 32'
+    cmd = f"gdaladdo {infile} 2 4 8 16 32"
     run_bash_command(cmd)
 
 
@@ -100,16 +100,16 @@ def make_cog(infile, outfile):
     Currently, gdal_tanslate to do this.
 
     """
-    cmd = f'gdal_translate {infile} {outfile} -co COMPRESS=DEFLATE \
+    cmd = f"gdal_translate {infile} {outfile} -co COMPRESS=DEFLATE \
 -co TILED=YES -co BLOCKXSIZE=512 -co BLOCKYSIZE=512 \
--co COPY_SRC_OVERVIEWS=YES --config GDAL_TIFF_OVR_BLOCKSIZE 512'
+-co COPY_SRC_OVERVIEWS=YES --config GDAL_TIFF_OVR_BLOCKSIZE 512"
     run_bash_command(cmd)
 
 
 def cleanUp():
     """Remove intermediate and auxiliary files."""
-    print('removing temporary files...')
-    cmd = 'rm tmp* *aux.xml'
+    print("removing temporary files...")
+    cmd = "rm tmp* *aux.xml"
     run_bash_command(cmd)
 
 
@@ -119,7 +119,7 @@ def writeIndex(intname):
     Geocoded ISCE outputs are referenced as links on a webpage .
 
     """
-    text = '''<html>
+    text = """<html>
 <head>
 <title>{intname}</title>
 </head>
@@ -160,7 +160,7 @@ def writeIndex(intname):
 
 
 </body>
-</html>'''
+</html>"""
     formattedText = text.format(intname=intname)
-    with open('index.html', 'w') as index:
+    with open("index.html", "w") as index:
         index.write(formattedText)
