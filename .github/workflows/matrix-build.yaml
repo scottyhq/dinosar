@@ -10,6 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        fail-fast: false
         os: [macos-latest, ubuntu-latest]
         CONDA_ENV: [3.6, 3.7, 3.8]
     steps:
@@ -33,4 +34,4 @@ jobs:
       - name: Run PyTest
         shell: bash -l {0}
         run: |
-          pytest --verbose --cov=dinosar --cov-config
+          pytest --verbose --cov=dinosar --cov-report=xml
