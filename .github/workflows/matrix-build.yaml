@@ -21,14 +21,15 @@ jobs:
         uses: goanpeca/setup-miniconda@v1
         with:
            environment-file: ci/environment-dev-py${{ matrix.CONDA_ENV }}.yml
+           auto-activate-base: false
            activate-environment: dinosar
            miniconda-version: 4.7.12
 
-      - name: Install Dinosar
+      - name: Install Dinosar From Latest Commit
         shell: bash -l {0}
         run: |
           conda --version
-          python -m pip install --no-deps .
+          python -m pip install .
           conda list
 
       - name: Run PyTest
