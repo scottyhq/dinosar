@@ -24,15 +24,16 @@ import os
 def read_yaml_template(template=None):
     """Read yaml file."""
     if template is None:
-        template = os.path.join(os.path.dirname(__file__), 'topsApp-template.yml')
-    with open(template, 'r') as outfile:
+        template = os.path.join(os.path.dirname(__file__), "topsApp-template.yml")
+    with open(template, "r") as outfile:
         defaults = yaml.load(outfile)
 
     return defaults
 
 
-def dict2xml(dictionary, root='topsApp', topcomp='topsinsar'):
+def dict2xml(dictionary, root="topsApp", topcomp="topsinsar"):
     """Convert simple dictionary to XML for ISCE."""
+
     def add_property(property, value):
         xml = f"        <property name='{property}'>{value}</property>\n"
         return xml
@@ -52,27 +53,30 @@ def dict2xml(dictionary, root='topsApp', topcomp='topsinsar'):
         else:
             xml += add_property(key, val)
 
-    xml += f'    </component>\n</{root}>\n'
+    xml += f"    </component>\n</{root}>\n"
 
     return xml
 
 
-def write_xml(xml, outname='topsApp.xml'):
+def write_xml(xml, outname="topsApp.xml"):
     """Write xml string to a file."""
-    print(f'writing {outname}')
-    with open(outname, 'w') as f:
+    print(f"writing {outname}")
+    with open(outname, "w") as f:
         f.write(xml)
 
 
 def load_defaultDict(template):
     if template:
-        print(f'Reading from template file: {template}...')
+        print(f"Reading from template file: {template}...")
         inputDict = dice.read_yaml_template(template)
     else:
-        inputDict = {'topsinsar': {'sensorname': 'SENTINEL1',
-                                   'master': {'safe': ''},
-                                   'slave': {'safe': ''},
-                                   }}
+        inputDict = {
+            "topsinsar": {
+                "sensorname": "SENTINEL1",
+                "master": {"safe": ""},
+                "slave": {"safe": ""},
+            }
+        }
     return inputDict
 
 
@@ -89,18 +93,23 @@ def write_cmap(outname, vals, scalarMap):
         mapping between array value and colormap value between 0 and 1
 
     """
-    with open(outname, 'w') as fid:
+    with open(outname, "w") as fid:
         for val in vals:
             cval = scalarMap.to_rgba(val)
-            fid.write('{0} {1} {2} {3} \n'.format(val,  # value
-                                                  int(cval[0]*255),  # R
-                                                  int(cval[1]*255),  # G
-                                                  int(cval[2]*255)))  # B
-        fid.write('nv 0 0 0 0 \n')  # nodata alpha transparency
+            fid.write(
+                "{0} {1} {2} {3} \n".format(
+                    val,  # value
+                    int(cval[0] * 255),  # R
+                    int(cval[1] * 255),  # G
+                    int(cval[2] * 255),
+                )
+            )  # B
+        fid.write("nv 0 0 0 0 \n")  # nodata alpha transparency
 
 
-def make_amplitude_cmap(mapname='gray', vmin=1, vmax=1e5, ncolors=64,
-                        outname='amplitude-cog.cpt'):
+def make_amplitude_cmap(
+    mapname="gray", vmin=1, vmax=1e5, ncolors=64, outname="amplitude-cog.cpt"
+):
     """Write default colormap (amplitude-cog.cpt) for isce amplitude images.
 
     Uses a LogNorm colormap by default since amplitude return values typically
@@ -129,8 +138,14 @@ def make_amplitude_cmap(mapname='gray', vmin=1, vmax=1e5, ncolors=64,
     return outname
 
 
-def make_wrapped_phase_cmap(mapname='plasma', vmin=-50, vmax=50, ncolors=64,
-                            wrapRate=6.28, outname='unwrapped-phase-cog.cpt'):
+def make_wrapped_phase_cmap(
+    mapname="plasma",
+    vmin=-50,
+    vmax=50,
+    ncolors=64,
+    wrapRate=6.28,
+    outname="unwrapped-phase-cog.cpt",
+):
     """Re-wrap unwrapped phase values and write 'unwrapped-phase-cog.cpt'.
 
     Each color cycle represents wavelength/2 line-of-sight change for
@@ -156,20 +171,25 @@ def make_wrapped_phase_cmap(mapname='plasma', vmin=-50, vmax=50, ncolors=64,
     vals = np.linspace(vmin, vmax, ncolors, endpoint=True)
     vals_wrapped = np.remainder(vals, wrapRate) / wrapRate
 
-    with open(outname, 'w') as fid:
+    with open(outname, "w") as fid:
         for val, wval in zip(vals, vals_wrapped):
             cval = scalarMap.to_rgba(wval)
-            fid.write('{0} {1} {2} {3} \n'.format(val,  # value
-                                                  int(cval[0]*255),  # R
-                                                  int(cval[1]*255),  # G
-                                                  int(cval[2]*255)))  # B
-        fid.write('nv 0 0 0 0 \n')  # nodata alpha
+            fid.write(
+                "{0} {1} {2} {3} \n".format(
+                    val,  # value
+                    int(cval[0] * 255),  # R
+                    int(cval[1] * 255),  # G
+                    int(cval[2] * 255),
+                )
+            )  # B
+        fid.write("nv 0 0 0 0 \n")  # nodata alpha
 
     return outname
 
 
-def make_coherence_cmap(mapname='inferno', vmin=1e-5, vmax=1, ncolors=64,
-                        outname='coherence-cog.cpt'):
+def make_coherence_cmap(
+    mapname="inferno", vmin=1e-5, vmax=1, ncolors=64, outname="coherence-cog.cpt"
+):
     """Write default colormap (coherence-cog.cpt) for isce coherence images.
 
     Parameters
@@ -196,10 +216,8 @@ def make_coherence_cmap(mapname='inferno', vmin=1e-5, vmax=1, ncolors=64,
 
 def make_cmap(infile):
     """Call correct cmap function depending on file."""
-    cornames = ['coherence-cog.tif',
-                'phsig.cor.geo.vrt',
-                'topophase.cor.geo.vrt']
-    phsnames = ['unwrapped-phase-cog.tif', 'filt_topophase.unw.geo.vrt']
+    cornames = ["coherence-cog.tif", "phsig.cor.geo.vrt", "topophase.cor.geo.vrt"]
+    phsnames = ["unwrapped-phase-cog.tif", "filt_topophase.unw.geo.vrt"]
 
     if infile in cornames:
         cpt = make_coherence_cmap()

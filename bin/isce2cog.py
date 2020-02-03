@@ -13,23 +13,50 @@ import argparse
 import dinosar.output as dout
 import dinosar.isce as dice
 
+
 def cmdLineParse():
     """Command line parser."""
-    parser = argparse.ArgumentParser(description='convert flat binary to COG')
-    parser.add_argument('-i', type=str, dest='inFile', required=True,
-                        help='input image file')
-    parser.add_argument('-b', type=int, dest='band', default=1, required=False,
-                        help='specify band from input image')
-    parser.add_argument('-o', type=str, dest='outFile', required=False,
-                        help='output file')
+    parser = argparse.ArgumentParser(description="convert flat binary to COG")
+    parser.add_argument(
+        "-i", type=str, dest="inFile", required=True, help="input image file"
+    )
+    parser.add_argument(
+        "-b",
+        type=int,
+        dest="band",
+        default=1,
+        required=False,
+        help="specify band from input image",
+    )
+    parser.add_argument(
+        "-o", type=str, dest="outFile", required=False, help="output file"
+    )
     # parser.add_argument('-h', action='store_true', default=False, dest='html',
     #                    required=False, help='create HTML index')
-    parser.add_argument('-c', action='store_true', default=False, dest='cpt',
-                        required=False, help='create colored RGB images')
-    parser.add_argument('-t', action='store_true', default=False, dest='tiles',
-                        required=False, help='Create image tiles for leaflet')
-    parser.add_argument('-n', action='store_true', default=False, dest='nail',
-                        required=False, help='Create image thumbnail')
+    parser.add_argument(
+        "-c",
+        action="store_true",
+        default=False,
+        dest="cpt",
+        required=False,
+        help="create colored RGB images",
+    )
+    parser.add_argument(
+        "-t",
+        action="store_true",
+        default=False,
+        dest="tiles",
+        required=False,
+        help="Create image tiles for leaflet",
+    )
+    parser.add_argument(
+        "-n",
+        action="store_true",
+        default=False,
+        dest="nail",
+        required=False,
+        help="Create image thumbnail",
+    )
 
     return parser
 
@@ -39,25 +66,25 @@ def main(parser):
     args = parser.parse_args()
 
     if not args.outFile:
-        args.outFile = args.inFile[:-4] + '-cog.tif'
-        print(f'No output file name given, using {args.outFile}')
+        args.outFile = args.inFile[:-4] + "-cog.tif"
+        print(f"No output file name given, using {args.outFile}")
 
-    msg = f'Creating COG {args.outFile} from {args.inFile} (band {args.band})'
+    msg = f"Creating COG {args.outFile} from {args.inFile} (band {args.band})"
     print(msg)
 
-    dout.extract_band(args.inFile, args.band, 'tmp.vrt')
-    dout.make_overviews('tmp.vrt')
-    dout.make_cog('tmp.vrt', args.outFile)
+    dout.extract_band(args.inFile, args.band, "tmp.vrt")
+    dout.make_overviews("tmp.vrt")
+    dout.make_cog("tmp.vrt", args.outFile)
 
     if not args.cpt:
-        print('Skipping RGB image creation')
+        print("Skipping RGB image creation")
     else:
-        rgbFile = args.outFile[:-4] + '-rgb.tif'
-        print(f'Creating RGB file {rgbFile}')
+        rgbFile = args.outFile[:-4] + "-rgb.tif"
+        print(f"Creating RGB file {rgbFile}")
         cpt = dice.make_cmap(args.inFile)
-        dout.make_rgb(args.outFile, cpt, 'tmp.tif')
-        dout.make_overviews('tmp.tif')
-        dout.make_cog('tmp.tif', rgbFile)
+        dout.make_rgb(args.outFile, cpt, "tmp.tif")
+        dout.make_overviews("tmp.tif")
+        dout.make_cog("tmp.tif", rgbFile)
 
         # Thumbnails and tiles only work well with colorized geotif
         if args.nail:
@@ -73,6 +100,6 @@ def main(parser):
 
 
 # Get interferogram name from command line argument
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = cmdLineParse()
     main(parser)

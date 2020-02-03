@@ -6,12 +6,12 @@ Subpackages
 
 .. toctree::
 
-    dinosar.cloud.aws
+   dinosar.cloud.aws
 
 Module contents
 ---------------
 
 .. automodule:: dinosar.cloud
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:
