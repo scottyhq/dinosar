@@ -1,7 +1,8 @@
-[![Build Status](https://travis-ci.org/scottyhq/dinosar.svg?branch=master)](https://travis-ci.org/scottyhq/dinosar)
+![Action Status](https://github.com/scottyhq/dinosar/workflows/Package/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/dinosar/badge/?version=latest)](https://dinosar.readthedocs.io/en/latest/?badge=latest)
-[![DOI](https://zenodo.org/badge/110758901.svg)](https://zenodo.org/badge/latestdoi/110758901)
 
+[![DOI](https://zenodo.org/badge/110758901.svg)](https://zenodo.org/badge/latestdoi/110758901)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/zenodo/10.5281/zenodo.3626175/?urlpath=lab)
 
 # dinoSAR (BETA!) 
 
