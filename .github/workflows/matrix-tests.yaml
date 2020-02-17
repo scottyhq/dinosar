@@ -1,3 +1,4 @@
+# Run tests on different OS/Python combinations
 name: Conda-Build
 
 on:
@@ -23,7 +24,8 @@ jobs:
            environment-file: ci/environment-dev-py${{ matrix.CONDA_ENV }}.yml
            auto-activate-base: false
            activate-environment: dinosar
-           miniconda-version: 4.7.12
+           miniconda-version: latest
+           auto-update-conda: true
 
       - name: Install Dinosar From Latest Commit
         shell: bash -l {0}

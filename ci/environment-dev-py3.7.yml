@@ -4,7 +4,6 @@ channels:
 dependencies:
   - python=3.7
   - geopandas
-  - matplotlib
   - pyyaml
   - lxml
   - pytest

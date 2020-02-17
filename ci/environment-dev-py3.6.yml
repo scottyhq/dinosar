@@ -4,11 +4,10 @@ channels:
 dependencies:
   - python=3.6
   - geopandas
-  - matplotlib
   - pyyaml
   - lxml
   - pytest
   - pytest-cov
   - flake8
   - black
-  - awscli
+  - awscli 
