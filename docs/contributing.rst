@@ -18,23 +18,26 @@ Code formatting is done with Black_. Documentation uses Sphinx_ with Restructure
 
 Installing development version
 ------------------------------
-Dependency management and Python package creation is done with Poetry_. To setup a local development environment, first create a virtual environment with _Conda. We also use conda to install geospatial libraries from conda-forge because they often have complicated dependencies on legacy system libraries::
+Dependency management and Python package creation is done with Poetry_, and pre-commit_ runs formatting checks automatically with each git commit. To setup a local development environment, first create a virtual environment with _Conda. We also use conda to install geospatial libraries from conda-forge because they often have complicated dependencies on legacy system libraries::
 
   git clone https://github.com/scottyhq/dinosar.git
   cd dinosar
   conda env create -f environment-poetry.yml
   conda activate environment-poetry.yml
   poetry install
+  poetry run pre-commit install
 
+.. _pre-commit: https://pre-commit.com
 .. _Poetry: https://github.com/python-poetry/poetry
 .. _Conda: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
 
 
 Run tests
 ---------
-Run tests locally with pytest::
+Run tests locally with pre-commit and pytest::
 
-  poetry run pytest
+  poetry run pre-commit run --all-files
+  poetry run pytest --cov=dinosar --cov-report=xml
 
 
 Preview documentation
