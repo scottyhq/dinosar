@@ -1,0 +1,33 @@
+# Make sure package installs for various virtual environments
+name: Venv-Install
+
+on:
+  pull_request:
+    branches: master
+
+jobs:
+  conda:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup Conda Environment
+        uses: goanpeca/setup-miniconda@v1
+        with:
+           environment-file: ci/environment-dev-py${{ matrix.CONDA_ENV }}.yml
+           auto-activate-base: false
+           activate-environment: dinosar
+           miniconda-version: latest
+           auto-update-conda: true
+
+      - name: Print package versions
+        shell: bash -l {0}
+        run: |
+          conda --version
+          conda list
+
+      - name: Run PyTest
+        shell: bash -l {0}
+        run: |
+          pytest --verbose --cov=dinosar --cov-report=xml
