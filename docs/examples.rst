@@ -67,7 +67,7 @@ To pull the dem back down to your local computer::
   aws s3 sync s3://batch-uniongap/dem/ .
 
 To remove a subfolder and all contents::
-  
+
   aws s3 rm s3://batch-uniongap/input/int-20180706-20180624 --recursive
 
 To launch the batch job::

@@ -68,7 +68,7 @@ def write_xml(xml, outname="topsApp.xml"):
 def load_defaultDict(template):
     if template:
         print(f"Reading from template file: {template}...")
-        inputDict = dice.read_yaml_template(template)
+        inputDict = read_yaml_template(template)
     else:
         inputDict = {
             "topsinsar": {

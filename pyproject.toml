@@ -14,8 +14,8 @@ keywords = ["SAR", "Cloud", "Batch", "AWS"]
 #[tool.poetry.scripts]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-geopandas = "^0.6"
+python = "^3.8"
+geopandas = "^0.7"
 matplotlib = "^3.1"
 pyyaml = "^5.2"
 lxml = "^4.4"
@@ -30,7 +30,8 @@ pytest-cov = "^2.8"
 flake8 = "^3.7"
 black = "^19.10b0"
 awscli = "^1.17"
-#dunamai = "^1" #currently failing
+pre-commit = "^1.10"
+dunamai = "^1.0"
 
 [build-system]
 requires = ["poetry>=1.0"]

@@ -1,0 +1,9 @@
+# Development venv for dinosar development
+name: dinosar-dev
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - poetry=1.0
+  - geopandas=0.7
+  - cartopy=0.17
