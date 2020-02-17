@@ -20,7 +20,7 @@ jobs:
         uses: goanpeca/setup-miniconda@v1
         with:
            environment-file: environment-poetry.yml
-           activate-environment: dinosar
+           activate-environment: dinosar-dev
            miniconda-version: 4.7.12
            auto-update-conda: true
 
