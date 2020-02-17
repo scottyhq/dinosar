@@ -5,5 +5,8 @@ channels:
 dependencies:
   - python=3.8
   - poetry=1.0
-  - geopandas=0.7
-  - cartopy=0.17
+  - geopandas
+  - cartopy
+  - pip=20.0
+  - pip:
+    - poetry-dynamic-versioning~=0.5

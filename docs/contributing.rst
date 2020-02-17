@@ -38,7 +38,7 @@ Run tests locally with pre-commit and pytest::
 
   poetry run pre-commit run --all-files
   poetry run pytest --cov=dinosar --cov-report=xml
-
+  poetry export --without-hashes -f requirements.txt > requirements.txt
 
 Preview documentation
 ---------------------

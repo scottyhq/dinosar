@@ -1,5 +1,5 @@
 # Run tests on different OS/Python combinations
-name: Conda-Build
+name: Conda-Matrix
 
 on:
   pull_request:

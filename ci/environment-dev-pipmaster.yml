@@ -1,0 +1,9 @@
+#conda env create -f environment-dev-pipmaster.yml
+name: dinosar
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - pip=20.0
+  - pip:
+    - git+git://github.com/scottyhq/dinosar@master
