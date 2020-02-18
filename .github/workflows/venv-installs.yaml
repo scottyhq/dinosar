@@ -1,4 +1,4 @@
-# Make sure package installs for various virtual environments
+# Make sure package installs for common conda environment configs
 name: Venv-Install
 
 on:
@@ -32,8 +32,3 @@ jobs:
         run: |
           conda --version
           conda list
-
-      - name: Run PyTest
-        shell: bash -l {0}
-        run: |
-          pytest --verbose --cov=dinosar --cov-report=xml

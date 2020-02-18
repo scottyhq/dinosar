@@ -16,6 +16,115 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import YearLocator, MonthLocator  # DateFormatter
 from pandas.plotting import table
 
+# Make plots optional dependency (switch to geoviews)
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+from cartopy.io.img_tiles import GoogleTiles
+from owslib.wmts import WebMapTileService
+
+
+def plot_map(gf, snwe, vectorFile=None, zoom=8):
+    """Plot dinosar inventory on a static map.
+    Parameters
+    ----------
+    gf :  GeoDataFrame
+        A geopandas GeoDataFrame
+    snwe : list
+        bounding coordinates [south, north, west, east].
+    vectorFile: str
+        path to region of interest polygon
+    zoom: int
+        zoom level for WMTS
+    """
+    pad = 1
+    S, N, W, E = snwe
+    plot_CRS = ccrs.PlateCarree()
+    geodetic_CRS = ccrs.Geodetic()
+    x0, y0 = plot_CRS.transform_point(W - pad, S - pad, geodetic_CRS)
+    x1, y1 = plot_CRS.transform_point(E + pad, N + pad, geodetic_CRS)
+
+    fig, ax = plt.subplots(
+        figsize=(8, 8), dpi=100, subplot_kw=dict(projection=plot_CRS)
+    )
+
+    ax.set_xlim((x0, x1))
+    ax.set_ylim((y0, y1))
+    url = "http://tile.stamen.com/terrain/{z}/{x}/{y}.png"
+    tiler = GoogleTiles(url=url)
+    # NOTE: going higher than zoom=8 is slow...
+    ax.add_image(tiler, zoom)
+
+    states_provinces = cfeature.NaturalEarthFeature(
+        category="cultural",
+        name="admin_1_states_provinces_lines",
+        scale="110m",
+        facecolor="none",
+    )
+    ax.add_feature(states_provinces, edgecolor="k", linestyle=":")
+    ax.coastlines(resolution="10m", color="black", linewidth=2)
+    ax.add_feature(cfeature.BORDERS)
+
+    # Add region of interest polygon in specified
+    if vectorFile:
+        tmp = gpd.read_file(vectorFile)
+        ax.add_geometries(
+            tmp.geometry.values,
+            ccrs.PlateCarree(),
+            facecolor="none",
+            edgecolor="m",
+            lw=2,
+            linestyle="dashed",
+        )
+
+    orbits = gf.relativeOrbit.unique()
+    colors = plt.cm.jet(np.linspace(0, 1, orbits.size))
+
+    for orbit, color in zip(orbits, colors):
+        df = gf.query("relativeOrbit == @orbit")
+        poly = df.geometry.cascaded_union
+
+        if df.flightDirection.iloc[0] == "ASCENDING":
+            linestyle = "--"
+            xpos, ypos = poly.centroid.x, poly.bounds[3]
+        else:
+            linestyle = "-"
+            xpos, ypos = poly.centroid.x, poly.bounds[1]
+
+        ax.add_geometries(
+            [poly],
+            ccrs.PlateCarree(),
+            facecolor="none",
+            edgecolor=color,
+            lw=2,
+            linestyle=linestyle,
+        )
+        ax.text(
+            xpos,
+            ypos,
+            orbit,
+            color=color,
+            fontsize=16,
+            fontweight="bold",
+            transform=geodetic_CRS,
+        )
+
+    gl = ax.gridlines(
+        plot_CRS,
+        draw_labels=True,
+        linewidth=0.5,
+        color="gray",
+        alpha=0.5,
+        linestyle="-",
+    )
+    gl.xlabels_top = False
+    gl.ylabels_left = False
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+
+    plt.title("Orbital Footprints")
+    plt.savefig("map.pdf", bbox_inches="tight")
+
 
 def plot_timeline_table(gf):
     """Plot dinosar inventory acquisitions as a timeline with a table.

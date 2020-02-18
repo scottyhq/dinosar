@@ -9,18 +9,20 @@ homepage = "https://github.com/scottyhq/dinosar"
 repository = "https://github.com/scottyhq/dinosar"
 keywords = ["SAR", "Cloud", "Batch", "AWS"]
 
-# https://github.com/python-poetry/poetry/issues/927#issuecomment-538178615
-# Can refactor CLI scripts later
-#[tool.poetry.scripts]
+[tool.poetry.scripts]
+get_inventory_asf = 'cli.get_inventory_asf:main'
+plot_inventory_as = 'cli.plot_inventory:main'
+prep_topsApp_local = 'cli.prep_topsApp_local:main'
 
 [tool.poetry.dependencies]
 python = "^3.6"
 geopandas = "^0.7"
+shapely = "^1.6"
 matplotlib = "^3.1"
 pyyaml = "^5.2"
 lxml = "^4.4"
 requests = "^2.22"
-#cartopy = "^0.16"
+cartopy = "^0.17"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.3"
