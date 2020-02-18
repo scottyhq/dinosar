@@ -76,8 +76,9 @@ def cmdLineParse():
     return parser
 
 
-def main(parser):
+def main():
     """Run as a script with args coming from argparse."""
+    parser = cmdLineParse()
     args = parser.parse_args()
     if not (args.roi or args.input):
         print("ERROR: requires '-r' or '-i' argument")
@@ -108,5 +109,4 @@ def main(parser):
 
 
 if __name__ == "__main__":
-    parser = cmdLineParse()
-    main(parser)
+    main()

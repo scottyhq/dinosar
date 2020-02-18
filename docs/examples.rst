@@ -9,10 +9,10 @@ Examples
 Query ASF Archive and plot results
 ----------------------------------
 
-Let's examine the Sentinel-1 archive covering Yakima, WA::
+Let's examine the Sentinel-1 archive covering Yakima, Washington, USA::
 
-    get_inventory_asf.py -r 46.51 46.53 -120.47 -120.45
-    plot_inventory.py -i query.geojson
+    get_inventory_asf -r 46.51 46.53 -120.47 -120.45
+    plot_inventory_asf -i query.geojson
 
 
 Download a DEM for processing
@@ -29,7 +29,7 @@ Prepare InSAR processing
 
 To run ISCE topsApp.py you need to download SLC data from ASF vertex for two dates, as well as precise orbit data files, and create a processing settings file in XML format. ``dinosar`` simplifies this setup with a script. It's common to use similar settings for many interferograms, so you can set processing parameters in a simple YML template file::
 
-    prep_topsApp_local.py -i query.geojson -m 20180706 -s 20180624 -p 115 -t topsApp-dinosar-template.yml
+    prep_topsApp_local -i query.geojson -m 20180706 -s 20180624 -p 115 -t topsApp-dinosar-template
 
 
 Note the template file can be found wherever dinosar was installed (e.g ``dinosar/isce/topsApp-dinosar-template.yml``)
@@ -67,7 +67,7 @@ To pull the dem back down to your local computer::
   aws s3 sync s3://batch-uniongap/dem/ .
 
 To remove a subfolder and all contents::
-  
+
   aws s3 rm s3://batch-uniongap/input/int-20180706-20180624 --recursive
 
 To launch the batch job::

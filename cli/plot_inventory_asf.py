@@ -32,9 +32,10 @@ def cmdLineParse():
     return parser
 
 
-def main(parser):
+def main():
     """Run as a script with args coming from argparse."""
     print("Generating map and timeline plots...")
+    parser = cmdLineParse()
     args = parser.parse_args()
     gf = load_inventory(args.input)
     w, s, e, n = gf.geometry.cascaded_union.bounds
@@ -46,5 +47,4 @@ def main(parser):
 
 
 if __name__ == "__main__":
-    parser = cmdLineParse()
-    main(parser)
+    main()

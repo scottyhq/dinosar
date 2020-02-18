@@ -10,6 +10,7 @@ NASA Distributed Active Archive Center (`ASF DAAC`_).
 
 import requests
 import json
+import shapely
 import shapely.wkt
 from shapely.geometry import box, mapping
 import pandas as pd

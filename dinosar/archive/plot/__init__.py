@@ -17,16 +17,15 @@ from matplotlib.dates import YearLocator, MonthLocator  # DateFormatter
 from pandas.plotting import table
 
 # Make plots optional dependency (switch to geoviews)
-# import cartopy.crs as ccrs
-# import cartopy.feature as cfeature
-# from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-# from cartopy.io.img_tiles import GoogleTiles
-# from owslib.wmts import WebMapTileService
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+from cartopy.io.img_tiles import GoogleTiles
+from owslib.wmts import WebMapTileService
 
 
 def plot_map(gf, snwe, vectorFile=None, zoom=8):
     """Plot dinosar inventory on a static map.
-
     Parameters
     ----------
     gf :  GeoDataFrame
@@ -37,7 +36,6 @@ def plot_map(gf, snwe, vectorFile=None, zoom=8):
         path to region of interest polygon
     zoom: int
         zoom level for WMTS
-
     """
     pad = 1
     S, N, W, E = snwe

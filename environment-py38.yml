@@ -1,7 +1,0 @@
-name: dinosar
-channels:
-  - conda-forge
-dependencies:
-  - python=3.8
-  - geopandas=0.6
-  - poetry=1.0

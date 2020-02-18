@@ -19,7 +19,6 @@ Requirements
 - You'll need a `NASA Earthdata`_ login to download SAR data from `ASF Vertex`_.
 - You'll need an AWS_ account to use AWS Batch functionality.
 - dinosar only works with Python>3.6.
-- for Python dependencies see requirements.txt
 
 
 .. _configuration:
@@ -47,25 +46,25 @@ The ``~/.aws/credentials`` file is created by installing the AWS CLI and running
 Full installation guide
 -----------------------
 
-This section assumes you are installing a dinosar for the first time. We are going to assume this is being installed on a Mac, but the procedure is almost identical on Linux, just make sure you get the correct `conda installer`_::
+This section assumes you are installing a dinosar and ISCE for the first time. We are going to assume this is being installed on a Mac, but the procedure is almost identical on Linux, just make sure you get the correct `conda installer`_::
 
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
     bash Miniconda3-latest-MacOSX-x86_64.sh
-    conda create -n dinosar python=3.6
+    conda create -n dinosar -c conda-forge python=3.8 isce=2.3.2
     conda activate dinosar
     pip install dinosar
 
 
-dinosar has scripts to build ISCE software as a Docker container. This enables batch jobs on AWS or other clusters. Fortunately Docker is easy to install on most systems - see `Docker Installation guide`_. Once Docker is installed, navigate to the ISCE version you want to install within the `dinosar/docker/` folder and run a build script::
+ISCE Docker Images
+------------------
 
-    DINODIR=`pip show dinosar | grep Location | cut -d':' -f2`
-    cd $DINODIR/docker/isce-2.3.1
-    ./build.sh
+dinosar has scripts to build ISCE software as a Docker container. This enables running ISCE via AWS Batch. Fortunately Docker is easy to install on most systems - see `Docker Installation guide`_. Once Docker is installed you can use Docker images built from the scripts in the dinosar/docker folder. For example::
 
+    docker pull dinosar/isce2:2.3.2
 
-Now when you want to run ISCE, let Docker create a container from your image. By default this container will have access to all your system resources. **Unlike regular programs, docker containers are ephemeral and once closed all your data is deleted**, so be sure to map a local folder where you are working for data to persist. For example::
+Now you can run ISCE commands in isolated docker containers. By default this container will have access to all your system resources. **Unlike regular programs, docker containers are ephemeral and once closed all your data is deleted**, so be sure to map a local folder where you are working for data to persist. For example::
 
-    docker run -it --rm -v $PWD:/home/ubuntu dinosar/isce:v2.3.1 /bin/bash
+    docker run -it --rm -v $PWD:/home/ubuntu dinosar/isce2:2.3.2 /bin/bash
 
 Docker containers also require additional command line arguments if you have graphical programs that you want to use (like `mdx.py`). It's convenient to wrap a bash function in your `~.bashrc` file so that launching ISCE is easy::
 
@@ -77,7 +76,7 @@ Docker containers also require additional command line arguments if you have gra
       docker run -it --rm -e DISPLAY=$IP \
       -v $PWD:/home/ubuntu \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
-      dinosar/isce:v2.3.1 \
+      dinosar/isce2:2.3.2 \
       /bin/bash
   }
 

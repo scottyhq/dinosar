@@ -1,0 +1,12 @@
+#conda env create -f environment-dev-isce.yml
+name: dinosar
+channels:
+  - conda-forge
+dependencies:
+  - python=3.7
+  - isce2=2.3.2
+  - geopandas=0.7
+  - cartopy=0.17
+  - pip=20.0
+  - pip:
+    - dinosar

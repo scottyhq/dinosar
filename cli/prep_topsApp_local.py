@@ -104,8 +104,9 @@ def cmdLineParse():
     return parser
 
 
-def main(parser):
+def main():
     """Run as a script with args coming from argparse."""
+    parser = cmdLineParse()
     inps = parser.parse_args()
     gf = asf.load_inventory(inps.inventory)
 
@@ -175,5 +176,4 @@ def main(parser):
 
 
 if __name__ == "__main__":
-    parser = cmdLineParse()
-    main(parser)
+    main()
