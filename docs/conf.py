@@ -29,9 +29,8 @@ author = "Scott Henderson"
 # version = '0.1'
 # The full version, including alpha/beta/rc tags
 # release = '0.1.1'
-# Parse the version from versioneer:
-version = dinosar.__version__
-release = dinosar.__version__
+# version = dinosar.__version__
+# release = dinosar.__version__
 
 # -- General configuration ---------------------------------------------------
 
