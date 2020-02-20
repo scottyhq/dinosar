@@ -16,10 +16,10 @@ Most of the Sentinel-1 SLC data distributed by ASF is actually stored in the AWS
 interactive work
 ----------------
 
-Perhaps you just want to launch a single powerful desktop with ISCE installed and work interactively in the us-east-1 region. You can do that by launching an `Amazon Machine Image (AMI) pre-loaded with Docker`_.  Then follow the dinosar installation instructions and examples as if you are working on your local machine. You can then save the modified AMI for future use, to not have to re-run all these steps next time. You'll want a machine with at least 16 Gb of RAM, so ``c5.2xlarge`` is a good choice for instance type. Also, add an additional amount of storage space for processing (either an EBS or EFS drive). With AWS you can add features and change options via the web interface. It's often convenient to set up scripts to do all the configuration (especially if you want to repeat what you are doing in the future!) - you can use AWS CloudFormation to do this.
+Perhaps you just want to launch a single powerful desktop with ISCE installed and work interactively in the us-east-1 region. You can do that by launching an `Amazon Machine Image (AMI_) pre-loaded with Docker`.  Then follow the dinosar installation instructions and examples as if you are working on your local machine. You can then save the modified AMI for future use, to not have to re-run all these steps next time. You'll want a machine with at least 16 Gb of RAM, so ``c5.2xlarge`` is a good choice for instance type. Also, add an additional amount of storage space for processing (either an EBS or EFS drive). With AWS you can add features and change options via the web interface. It's often convenient to set up scripts to do all the configuration (especially if you want to repeat what you are doing in the future!) - you can use AWS CloudFormation to do this.
 
 
-.. _`Amazon Machine Image pre-loaded with Docker`: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+.. _AMI: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
 .. _`Kubernetes`: https://urs.earthdata.nasa.gov
 .. _`Docker Swarm`: https://urs.earthdata.nasa.gov
 .. _`AWS EKS`: https://aws.amazon.com/eks

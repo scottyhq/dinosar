@@ -5,12 +5,16 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = dinosar
-SOURCEDIR     =
+SOURCEDIR     = .
 BUILDDIR      = _build
 
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+api:
+	sphinx-apidoc -fMeET ../dinosar -o api
+	@echo "Auto-generation of API documentation finished in api/ folder "
 
 .PHONY: help Makefile
 

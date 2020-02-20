@@ -304,9 +304,6 @@ def query_asf(
     relativeOrbit,maxResults,processingDate,start or end acquisition time,
     slaveStart/slaveEnd
 
-    * to generate metalink for bulk pre-batch download, granule_list probably
-    easiest input
-
     """
     print(f"Querying ASF Vertex for {sat}...")
     miny, maxy, minx, maxx = snwe

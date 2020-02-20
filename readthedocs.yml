@@ -1,8 +1,8 @@
-build:
-  image: latest
+version: 2
 
-python:
-  version: 3.7
-  pip_install: true
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
 
-requirements_file: docs/requirements.txt
+conda:
+  environment: docs/environment-docs.yml

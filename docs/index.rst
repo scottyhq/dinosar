@@ -7,14 +7,14 @@ Welcome to dinosar's documentation!
 ===================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    install
    quickstart
    examples
    topics/index
-   api/index
+   api
    contributing
 
 Indices and tables

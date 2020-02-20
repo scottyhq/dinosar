@@ -45,7 +45,7 @@ Preview documentation
 If you edit documentation (including docstrings in code), preview locally with sphinx::
 
   cd docs
-  sphinx-apidoc -f -o source ../dinosar
+  make api
   make html
   open _build/html/index.html
 
@@ -54,5 +54,5 @@ Releasing new versions
 ----------------------
 This repository is setup with GitHub Actions CI/CD, so pushing a tag to the master branch uploads a new release to PyPi::
 
+  VERSION=v0.1.3
   git tag $VERSION ; git push --tags
-  git checkout tags/$VERSION -b $VERSION

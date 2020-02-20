@@ -47,7 +47,7 @@ Because SLC data takes up a lot of space, files are not downloaded automatically
 
 
 Process single interferogram on AWS
-----------------------------
+-----------------------------------
 
 Instead of processing on your local machine, process on AWS (assumes AWS account and resources properly configured). Run the following from the interferogram directory **TODO: simplify this**::
 

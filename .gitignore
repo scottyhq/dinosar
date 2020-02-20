@@ -2,10 +2,11 @@
 *tar.gz
 examples/
 docs/source
+docs/api
 *.icloud
 tests/tmp/*
-isce-2.2.0.tar.bz2
-#isce-2*
+isce-2*.tar.bz2
+isce-2*tar
 isce-1*
 notebooks/
 muck/

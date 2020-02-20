@@ -1,4 +1,4 @@
 # This file is part of dinosar
-from . import asf, plot
+from . import asf
 
-__all__ = ["asf", "plot"]
+__all__ = ["asf"]
