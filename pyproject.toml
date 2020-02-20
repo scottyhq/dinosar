@@ -22,19 +22,25 @@ matplotlib = "^3.1"
 pyyaml = "^5.2"
 lxml = "^4.4"
 requests = "^2.22"
-cartopy = "^0.17"
+# plotting/graphics libraries optional
+cartopy = { version = "^0.17", optional = true }
+# documentation libraries optional
+sphinx = { version = "^2.3", optional = true }
+sphinx_rtd_theme = { version = "^0.4", optional = true }
+sphinxcontrib-apidoc = { version = "^0.3" , optional = true }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.3"
-sphinx = "^2.3"
-sphinx_rtd_theme = "^0.4"
-sphinxcontrib-apidoc = "^0.3"
 pytest-cov = "^2.8"
 flake8 = "^3.7"
 black = "^19.10b0"
 awscli = "^1.17"
 pre-commit = "^1.10"
 dunamai = "^1.0"
+
+[tool.poetry.extras]
+vis = ["cartopy"]
+docs = ["sphinx","sphinx_rtd_theme","sphinxcontrib-apidoc"]
 
 [tool.poetry-dynamic-versioning]
 enable = true
