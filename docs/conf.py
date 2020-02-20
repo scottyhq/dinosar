@@ -45,8 +45,16 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
+    "sphinxcontrib.apidoc",
 ]
 
+# APIDOC configuration (automate sphinx-apidoc -fMeET ../dinosar -o api)
+apidoc_module_dir = "../dinosar"
+apidoc_output_dir = "api"
+# apidoc_excluded_paths = ['tests']
+apidoc_separate_modules = True
+apidoc_toc_file = False
+apidoc_module_first = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
