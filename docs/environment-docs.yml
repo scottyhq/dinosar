@@ -6,4 +6,4 @@ dependencies:
 #  - cartopy=0.17
   - pip=20.0
   - pip:
-    - .
+    - ../
