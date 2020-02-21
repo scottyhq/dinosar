@@ -4,6 +4,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.8
+  - msgpack-python<1
   - poetry=1.0
   - geopandas=0.7
   - cartopy=0.17

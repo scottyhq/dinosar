@@ -27,7 +27,7 @@ cartopy = { version = "^0.17", optional = true }
 # documentation libraries optional
 sphinx = { version = "^2.3", optional = true }
 sphinx_rtd_theme = { version = "^0.4", optional = true }
-sphinxcontrib-apidoc = { version = "^0.3" , optional = true }
+sphinxcontrib-apidoc = { version = "^0.3",  optional = true }
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.3"
