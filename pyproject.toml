@@ -11,7 +11,7 @@ keywords = ["SAR", "Cloud", "Batch", "AWS"]
 
 [tool.poetry.scripts]
 get_inventory_asf = 'cli.get_inventory_asf:main'
-plot_inventory_as = 'cli.plot_inventory:main'
+plot_inventory_asf = 'cli.plot_inventory:main'
 prep_topsApp_local = 'cli.prep_topsApp_local:main'
 
 [tool.poetry.dependencies]
