@@ -73,11 +73,12 @@ Docker containers also require additional command line arguments if you have gra
       echo 'type "exit" to get back to your terminal'
       IP=$(ifconfig en0 | awk '/inet /{print $2 ":0"}')
       xhost +
+      -e NASAUSER=$NASAUSER -e NASAPASS=$NASAPASS \
       docker run -it --rm -e DISPLAY=$IP \
       -v $PWD:/home/ubuntu \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       dinosar/isce2:2.3.2 \
-      /bin/bash
+      $1
   }
 
 The above function opens an interactive bash shell, so in a folder prepared for processing an interferogram, run::

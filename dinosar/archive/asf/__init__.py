@@ -354,7 +354,7 @@ def get_orbit_url_file(
     return orbitUrl
 
 
-def get_orbit_url_server(granuleName, url="https://s1qc.asf.alaska.edu/aux_poeorb"):
+def get_orbit_url(granuleName, url="https://s1qc.asf.alaska.edu/aux_poeorb"):
     """Retrieve precise orbit file for a specific Sentinel-1 granule.
 
     Precise orbits available ~3 weeks after aquisition.

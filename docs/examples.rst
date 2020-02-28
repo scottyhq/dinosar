@@ -18,21 +18,51 @@ Let's examine the Sentinel-1 archive covering Yakima, Washington, USA::
 Download a DEM for processing
 -----------------------------
 
-InSAR processing requires a DEM, ISCE can download 30m SRTM data based on geographic bounds. After downloading, you may want to run ``fixImageXml.py`` or ``upsampleDem.py``::
+InSAR processing requires a DEM, ISCE can download 30m SRTM data based on geographic bounds. This command passes NASA URS authentication name and password as environment variables to enable downloading from SRTM data from NASA servers::
 
-    start_isce
-    dem.py -b 45 48 -122 -119
+    docker run -e NASAUSER=scottyhq -e NASAPASS=xxxxxxxxxxx -it --rm -v $PWD:/home/ubuntu dinosar/isce2:2.3.2 dem.py -b 45 48 -122 -119
+
+After downloading, you may want to run ISCE utility scripts ``fixImageXml.py`` (to use a an absolute path in the xml metadata) or ``upsampleDem.py`` (to change the DEM pixel posting).
 
 
-Prepare InSAR processing
-------------------------
+Local processing of single interferometric pair
+-----------------------------------------------
 
 To run ISCE topsApp.py you need to download SLC data from ASF vertex for two dates, as well as precise orbit data files, and create a processing settings file in XML format. ``dinosar`` simplifies this setup with a script. It's common to use similar settings for many interferograms, so you can set processing parameters in a simple YML template file::
 
-    prep_topsApp_local -i query.geojson -m 20180706 -s 20180624 -p 115 -t topsApp-dinosar-template
+    prep_topsApp_local -i query.geojson -m 20180706 -s 20180624 -p 115 -t dinosar-template.yml
 
 
-Note the template file can be found wherever dinosar was installed (e.g ``dinosar/isce/topsApp-dinosar-template.yml``)
+Where dinosar-template.yml defines parameters for the topsApp.py workflow::
+
+    topsinsar:
+      sensorname: SENTINEL1
+      swaths: [1]
+      azimuthlooks: 1
+      rangelooks: 6
+      filterstrength: 0.1
+      regionofinterest: [46.45, 46.55, -120.53, -120.43]
+      geocodeboundingbox: [46.45, 46.55, -120.53, -120.43]
+      geocodelist: [merged/filt_topophase.unw, merged/phsig.cor, merged/topophase.cor, merged/los.rdr]
+      doesd: True
+      dounwrap: True
+      unwrappername: snaphu_mcf
+      demfilename: demLat_N45_N48_Lon_W122_W119_15m.dem.wgs84
+      usegpu: False
+
+      master:
+        safe: ''
+        output directory: masterdir
+        auxiliary data directory: /home/ubuntu/s1_auxcal
+        orbit directory: ./
+        polarization: vv
+
+      slave:
+        safe: ''
+        output directory: slavedir
+        auxiliary data directory: /home/ubuntu/s1_auxcal
+        orbit directory: ./
+        polarization: vv
 
 
 Process interferogram
@@ -41,6 +71,8 @@ Process interferogram
 Because SLC data takes up a lot of space, files are not downloaded automatically. Instead the prep_topsApp_local.py script creates a file with the download urls to download them for processing. Once the SLC data and orbit files are downloaded to the local directory you can generate an interferogram::
 
     cd int-20180706-20180624
+    export NASAUSER=changeme
+    export NASAPASS=changeme
     start_isce
     aria2c -x 8 -s 8 -i download-links.txt
     topsApp.py --steps 2>&1 | tee topsApp.log
@@ -49,7 +81,7 @@ Because SLC data takes up a lot of space, files are not downloaded automatically
 Process single interferogram on AWS
 -----------------------------------
 
-Instead of processing on your local machine, process on AWS (assumes AWS account and resources properly configured). Run the following from the interferogram directory **TODO: simplify this**::
+Instead of processing on your local machine, process on AWS (assumes AWS account and resources properly configured - see https://aws.amazon.com/blogs/compute/creating-a-simple-fetch-and-run-aws-batch-job/). Run the following from the interferogram directory::
 
   aws batch submit-job --job-name test-single  --job-queue isce-single-c4-ondemand  --job-definition run-single:2 --parameters 'int_s3=s3://int-20160722-20160628,dem_s3=s3://isce-dems' --container-overrides 'environment=[{name=NASAUSER,value=CHANGE},{name=NASAPASS,value=CHANGE}]'
 
@@ -57,7 +89,7 @@ Instead of processing on your local machine, process on AWS (assumes AWS account
 Batch process interferograms on AWS
 -----------------------------------
 
-Currently, ``dinosar`` has the ability to process a list of interferograms in parallel. Note, these are not aligned to a common master geometry, but rather processed in a pairwise fashion. You should specify a common geocode bounding box so that all interferograms end up on the same grid. Generally, before submitting a batch job, we recommend::
+``dinosar`` has the ability to process a list of interferograms in parallel. Note, these are not aligned to a common master geometry, but rather processed in a pairwise fashion. You should specify a common geocode bounding box so that all interferograms end up on the same grid. Generally, before submitting a batch job, we recommend::
 
   aws s3 mb s3://batch-uniongap --region us-east-1
   aws s3 cp . s3://batch-uniongap/dem/ --recursive --exclude "*" --include "dem*"

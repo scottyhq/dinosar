@@ -26,7 +26,7 @@ def read_yaml_template(template=None):
     if template is None:
         template = os.path.join(os.path.dirname(__file__), "topsApp-template.yml")
     with open(template, "r") as outfile:
-        defaults = yaml.load(outfile)
+        defaults = yaml.load(outfile, Loader=yaml.FullLoader)
 
     return defaults
 
