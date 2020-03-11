@@ -80,7 +80,7 @@ def load_asf_json(jsonfile):
 
     df = pd.DataFrame(meta)
     polygons = df.stringFootprint.apply(shapely.wkt.loads)
-    gf = gpd.GeoDataFrame(df, crs={"init": "epsg:4326"}, geometry=polygons)
+    gf = gpd.GeoDataFrame(df, crs="EPSG:4326", geometry=polygons)
 
     gf["timeStamp"] = pd.to_datetime(gf.sceneDate, format="%Y-%m-%d %H:%M:%S")
     gf["sceneDateString"] = gf.timeStamp.apply(lambda x: x.strftime("%Y-%m-%d"))
@@ -119,7 +119,7 @@ def summarize_orbits(gf):
         DF["nFrames"] = nFrames.values
         DF.drop("dateStamp", axis=1, inplace=True)
         # DF.set_index('date') # convert to datetime difference
-        outFile = "acquisitions_{}.csv".format(orb)
+        outFile = f"acquisitions_{orb}.csv"
         print(f"Saving {outFile} ...")
         DF.to_csv(outFile)
 
@@ -140,10 +140,10 @@ def save_geojson_footprints(gf):
     gb = gf.groupby(["relativeOrbit", "sceneDateString"])
     S = gf.groupby("relativeOrbit").sceneDateString.unique()
     for orbit, dateList in S.iteritems():
-        os.makedirs(orbit)
+        os.makedirs(str(orbit))
         for date in dateList:
             dftmp = gf.loc[gb.groups[(orbit, date)], attributes].reset_index(drop=True)
-            outname = os.path.join(orbit, date + ".geojson")
+            outname = f"{orbit}/{date}.geojson"
             dftmp.to_file(outname, driver="GeoJSON")
 
 
@@ -174,7 +174,7 @@ def summarize_inventory(gf):
     dfS.to_csv("inventory_summary.csv")
     print(dfS)
     size = dfS.Frames.sum() * 5 / 1e3
-    print("Approximate Archive size = {} Tb".format(size))
+    print(f"Approximate Archive size = {size} Tb")
 
 
 def merge_inventories(s1Afile, s1Bfile):
@@ -308,7 +308,7 @@ def query_asf(
     print(f"Querying ASF Vertex for {sat}...")
     miny, maxy, minx, maxx = snwe
     roi = shapely.geometry.box(minx, miny, maxx, maxy)
-    polygonWKT = roi.to_wkt()
+    polygonWKT = roi.wkt
 
     baseurl = "https://api.daac.asf.alaska.edu/services/search/param"
     # relativeOrbit=$ORBIT
@@ -496,7 +496,7 @@ def snwe2file(snwe):
     with open("snwe.json", "w") as j:
         json.dump(mapping(roi), j)
     with open("snwe.wkt", "w") as w:
-        w.write(roi.to_wkt())
+        w.write(roi.wkt)
     with open("snwe.txt", "w") as t:
         snweList = "[{0:.3f}, {1:.3f}, {2:.3f}, {3:.3f}]".format(S, N, W, E)
         t.write(snweList)
