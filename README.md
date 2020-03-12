@@ -1,9 +1,6 @@
 ![Action Status](https://github.com/scottyhq/dinosar/workflows/Package/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/dinosar/badge/?version=latest)](https://dinosar.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/scottyhq/gpstools/branch/master/graph/badge.svg)](https://codecov.io/gh/scottyhq/dinosar)
-
-[![DOI](https://zenodo.org/badge/110758901.svg)](https://zenodo.org/badge/latestdoi/110758901)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/zenodo/10.5281/zenodo.3626175)
+[![codecov](https://codecov.io/gh/scottyhq/dinosar/branch/master/graph/badge.svg)](https://codecov.io/gh/scottyhq/dinosar)
 
 # dinoSAR
 
