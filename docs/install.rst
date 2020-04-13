@@ -66,17 +66,19 @@ Now you can run ISCE commands in isolated docker containers. By default this con
 
     docker run -it --rm -v $PWD:/home/ubuntu dinosar/isce2:2.3.2 /bin/bash
 
-Docker containers also require additional command line arguments if you have graphical programs that you want to use (like `mdx.py`). It's convenient to wrap a bash function in your `~.bashrc` file so that launching ISCE is easy::
+
+By default docker containers have access to limited resources on the host machine. But these can be adjusted if you want a container to have access to more CPU or RAM. For example, see https://docs.docker.com/docker-for-mac/#resources.
+
+Docker containers also require additional command line arguments if you have graphical programs that you want to use (like `mdx.py`) - the arguments often depend on the host machine you are running on (see this issue for MacOSX_). It's convenient to wrap a bash function in your `~/.bashrc` file so that you don't have to type these command line options every time. For example, this function allows you to run `mdx.py` (at least on MacOSX 10.15.3)::
 
   start_isce () {
       echo 'Starting interactive ISCE session via docker'
       echo 'type "exit" to get back to your terminal'
-      IP=$(ifconfig en0 | awk '/inet /{print $2 ":0"}')
-      xhost +
+      socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\" &
       -e NASAUSER=$NASAUSER -e NASAPASS=$NASAPASS \
-      docker run -it --rm -e DISPLAY=$IP \
+      docker run -it --rm \
+      -e DISPLAY=docker.for.mac.host.internal:0 \
       -v $PWD:/home/ubuntu \
-      -v /tmp/.X11-unix:/tmp/.X11-unix \
       dinosar/isce2:2.3.2 \
       $1
   }
@@ -89,6 +91,7 @@ The above function opens an interactive bash shell, so in a folder prepared for 
 
 For a tutorial that demonstrates a full workflow, see the `examples section <./examples>`__.
 
+.. _`MacOSX`: https://github.com/moby/moby/issues/8710
 .. _`conda installer`: https://conda.io/miniconda.html#miniconda
 .. _`Docker Installation guide`: https://docs.docker.com/install/
 .. _`ISCE software`: https://github.com/isce-framework/isce2

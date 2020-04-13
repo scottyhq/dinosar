@@ -7,7 +7,7 @@ dependencies:
   - msgpack-python<1
   - poetry=1.0
   - geopandas=0.7
-  - cartopy=0.17
+  - pyyaml
   - pip=20.0
   - pip:
     - poetry-dynamic-versioning~=0.5

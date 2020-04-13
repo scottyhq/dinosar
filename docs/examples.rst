@@ -18,12 +18,13 @@ Let's examine the Sentinel-1 archive covering Yakima, Washington, USA::
 Download a DEM for processing
 -----------------------------
 
-InSAR processing requires a DEM, ISCE can download 30m SRTM data based on geographic bounds. This command passes NASA URS authentication name and password as environment variables to enable downloading from SRTM data from NASA servers::
+InSAR processing requires a DEM with heights relative to the WGS84 geoid, ISCE can download 30m SRTM data, apply corrections, and crop based on geographic bounds. This command passes NASA URS authentication name and password as environment variables to enable downloading from SRTM data from NASA servers::
 
-    docker run -e NASAUSER=scottyhq -e NASAPASS=xxxxxxxxxxx -it --rm -v $PWD:/home/ubuntu dinosar/isce2:2.3.2 dem.py -b 45 48 -122 -119
+    docker run -e NASAUSER=scottyhq -e NASAPASS=xxxxxxxxxxx -it --rm -v $PWD:/home/ubuntu dinosar/isce2:2.3.2 dem.py -c -b 45 48 -122 -119
 
 After downloading, you may want to run ISCE utility scripts ``fixImageXml.py`` (to use a an absolute path in the xml metadata) or ``upsampleDem.py`` (to change the DEM pixel posting).
 
+    docker run -it --rm -v $PWD:/home/ubuntu dinosar/isce2:2.3.2 upsampleDem.py -i demLat_N45_N48_Lon_W122_W119.dem.wgs84 -o demLat_N45_N48_Lon_W122_W119_15m.dem.wgs84 -f 2 2
 
 Local processing of single interferometric pair
 -----------------------------------------------
@@ -53,14 +54,12 @@ Where dinosar-template.yml defines parameters for the topsApp.py workflow::
       master:
         safe: ''
         output directory: masterdir
-        auxiliary data directory: /home/ubuntu/s1_auxcal
         orbit directory: ./
         polarization: vv
 
       slave:
         safe: ''
         output directory: slavedir
-        auxiliary data directory: /home/ubuntu/s1_auxcal
         orbit directory: ./
         polarization: vv
 
@@ -70,10 +69,12 @@ Process interferogram
 
 Because SLC data takes up a lot of space, files are not downloaded automatically. Instead the prep_topsApp_local.py script creates a file with the download urls to download them for processing. Once the SLC data and orbit files are downloaded to the local directory you can generate an interferogram::
 
-    cd int-20180706-20180624
+
     export NASAUSER=changeme
     export NASAPASS=changeme
     start_isce
+    cd int-20180706-20180624
+    mv ../demLat_N45_N48_Lon_W122_W119_15m.dem.wgs84* .
     aria2c -x 8 -s 8 -i download-links.txt
     topsApp.py --steps 2>&1 | tee topsApp.log
 

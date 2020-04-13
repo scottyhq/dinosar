@@ -23,7 +23,7 @@ Dependency management and Python package creation is done with Poetry_, and pre-
   git clone https://github.com/scottyhq/dinosar.git
   cd dinosar
   conda env create -f environment-poetry.yml
-  conda activate environment-poetry.yml
+  conda activate dinosar-dev
   poetry install
   poetry run pre-commit install
 
