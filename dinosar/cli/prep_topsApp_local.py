@@ -22,7 +22,6 @@ import argparse
 import os
 from dinosar.archive import asf
 import dinosar.isce as dice
-import dinosar.output as dout
 
 
 def cmdLineParse():
