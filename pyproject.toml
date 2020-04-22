@@ -10,9 +10,9 @@ repository = "https://github.com/scottyhq/dinosar"
 keywords = ["SAR", "Cloud", "Batch", "AWS"]
 
 [tool.poetry.scripts]
-get_inventory_asf = 'cli.get_inventory_asf:main'
-plot_inventory_asf = 'cli.plot_inventory_asf:main'
-prep_topsApp_local = 'cli.prep_topsApp_local:main'
+get_inventory_asf = 'dinosar.cli.get_inventory_asf:main'
+plot_inventory_asf = 'dinosar.cli.plot_inventory_asf:main'
+prep_topsApp_local = 'dinosar.cli.prep_topsApp_local:main'
 
 [tool.poetry.dependencies]
 python = "^3.8"

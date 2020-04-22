@@ -30,6 +30,8 @@ usage () {
 Usage:
 export BATCH_FILE_TYPE="script"
 export BATCH_FILE_URL="https://some.url..."
+export NASAUSER=user
+export NASAPASS=password
 ${BASENAME} script-from-url [ <script arguments> ]
   - or -
 export BATCH_FILE_TYPE="zip"
@@ -77,6 +79,10 @@ TMPDIR="$(mktemp -d -t tmp.XXXXXXXXX)" || error_exit "Failed to create temp dire
 TMPFILE="${TMPDIR}/batch-file-temp"
 install -m 0600 /dev/null "${TMPFILE}" || error_exit "Failed to create temp file."
 
+# inject netrc credentials for downloading nasa data
+echo "machine urs.earthdata.nasa.gov login $NASAUSER password $NASAPASS" > $HOME/.netrc
+chmod 600 $HOME/.netrc
+
 # Fetch and run a script
 fetch_and_run_script () {
   # Create a temporary file and download the script
@@ -119,6 +125,7 @@ case ${BATCH_FILE_TYPE} in
     ;;
 
   *)
-    usage "Unsupported value for BATCH_FILE_TYPE. Expected (zip/script)."
+    #simply execute whatever command is passed
+    exec "${@}"
     ;;
 esac

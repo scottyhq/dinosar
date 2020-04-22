@@ -51,7 +51,6 @@ WORKDIR /home/ubuntu
 
 # Copy ISCE installation files and entrypoint script
 COPY --chown=ubuntu:ubuntu --from=build /opt /opt
-COPY --chown=ubuntu:ubuntu entrypoint.sh /opt/bin/entrypoint.sh
 COPY --chown=ubuntu:ubuntu fetch_and_run.sh /opt/bin/fetch_and_run.sh
 
 # Install aws cli
@@ -63,9 +62,11 @@ ENV ISCE_HOME $ISCE_ROOT/isce
 ENV PATH $ISCE_HOME/bin:$ISCE_HOME/applications:/opt/bin:$PATH
 ENV PYTHONPATH $ISCE_ROOT:$ISCE_HOME/applications:$ISCE_HOME/component
 
-# Placeholders for NASA URS AUTH
-ENV NASAUSER runtimeenv
-ENV NASAPASS runtimeenv
+# Placeholders for NASA URS AUTH, entrypoint variables
+ENV NASAUSER none
+ENV NASAPASS none
+ENV BATCH_FILE_TYPE none
+ENV BATCH_FILE_URL none
 
-ENTRYPOINT ["/opt/bin/entrypoint.sh"]
+ENTRYPOINT ["/opt/bin/fetch_and_run.sh"]
 CMD ["/bin/bash"]
