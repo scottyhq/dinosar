@@ -37,7 +37,8 @@ Run tests
 Run tests locally with pre-commit and pytest::
 
   poetry run pre-commit run --all-files
-  poetry run pytest --cov=dinosar --cov-report=xml
+  poetry run pytest -o markers=network --cov=dinosar --cov-report=xml
+  poetry run pytest -o markers=network -m "not network"  #skip tests requiring internet access
 
 Preview documentation
 ---------------------
