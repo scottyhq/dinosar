@@ -1,0 +1,12 @@
+# Path config for Ubtuntu 18.04
+
+PRJ_SCONS_BUILD=/tmp/isce2-2.4.0/build
+PRJ_SCONS_INSTALL=/opt/isce2-2.4.0/isce
+
+LIBPATH=/usr/lib/x86_64-linux-gnu /usr/lib /usr/lib/x86_64-linux-gnu/hdf5/serial
+CPPPATH=/usr/include/x86_64-linux-gnu /usr/include /usr/include/python3.6m /usr/include/hdf5/serial /usr/include/gdal /usr/lib/python3/dist-packages/numpy/core/include /usr/include/opencv4
+FORTRANPATH=/usr/include /usr/lib/gcc/x86_64-linux-gnu/7/finclude
+
+FORTRAN=/usr/bin/gfortran
+CC=/usr/bin/gcc
+CXX=/usr/bin/g++

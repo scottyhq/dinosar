@@ -301,8 +301,7 @@ def query_asf(
     minFaradayRotation,flightDirection,flightLine,frame,granule_list,
     maxInsarStackSize,minInsarStackSize,intersectsWith,lookDirection,
     offNadirAngle,output,platform,polarization,polygon,processingLevel,
-    relativeOrbit,maxResults,processingDate,start or end acquisition time,
-    slaveStart/slaveEnd
+    relativeOrbit,maxResults,processingDate,start or end acquisition time
 
     """
     print(f"Querying ASF Vertex for {sat}...")

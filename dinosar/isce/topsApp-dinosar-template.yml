@@ -15,14 +15,14 @@ topsinsar:
   usegpu: True
   usevirtualfiles: True
 
-  master:
+  reference:
     safe: None
     output directory: None
     auxiliary data directory: None
     orbit directory: None
     polarization: 'vv'
 
-  slave:
+  secondary:
     safe: None
     output directory: None
     auxiliary data directory: None

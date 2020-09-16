@@ -11,7 +11,7 @@ def test_read_yml_template():
 
     assert isinstance(inputDict, dict)
     assert inputDict["topsinsar"]["azimuthlooks"] == 1
-    assert inputDict["topsinsar"]["master"]["polarization"] == "vv"
+    assert inputDict["topsinsar"]["reference"]["polarization"] == "vv"
 
 
 def test_write_topsApp_xml(tmpdir):
@@ -20,8 +20,8 @@ def test_write_topsApp_xml(tmpdir):
         "topsinsar": {
             "azimuthlooks": 7,
             "filterstrength": 0.5,
-            "master": {"safe": "s1a.zip"},
-            "slave": {"safe": "s1b.zip"},
+            "reference": {"safe": "s1a.zip"},
+            "secondary": {"safe": "s1b.zip"},
         }
     }
     xml = dice.dict2xml(testDict)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dinosar"
-version = "0.0.0"
+version = "0.1.4"
 description = "SAR processing on the Cloud"
 authors = ["Scott Henderson <scotty@uw.edu>"]
 license = "MIT"
@@ -15,7 +15,7 @@ plot_inventory_asf = 'dinosar.cli.plot_inventory_asf:main'
 prep_topsApp_local = 'dinosar.cli.prep_topsApp_local:main'
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.7"
 geopandas = "^0.8"
 pandas = "^1.0"
 shapely = "^1.6"

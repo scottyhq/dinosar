@@ -1,28 +1,26 @@
-FROM ubuntu:20.04 as build
+FROM ubuntu:18.04 as build
 # Build ISCE as root with development libraries
 # --------------------------------
 LABEL maintainer="scottyh@uw.edu"
 
-ENV ISCE_VERSION=2.4.1
+ENV ISCE_VERSION=2.4.0
 
 WORKDIR /tmp
 
 COPY SConfigISCE /tmp/
 
-# Update Base Ubuntu installation, system libraries for compiling ISCE
+# Update Base Ubuntu installation
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update \
-    && apt-get install -y wget gfortran scons libmotif-dev libhdf5-dev libfftw3-dev libgdal-dev \
-       python3 cython3 python3-scipy python3-matplotlib python3-h5py python3-gdal python3-pip \
+    && apt-get install -y wget gfortran scons libmotif-dev libhdf5-dev libfftw3-dev libgdal-dev libopencv-dev \
+       python3 cython3 python3-scipy python3-matplotlib python3-h5py python3-gdal python3-pip python3-opencv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ISCE and remove files from /tmp folder
-# With quick sed fix to prevent autorift install
 RUN wget https://github.com/isce-framework/isce2/archive/v${ISCE_VERSION}.tar.gz \
     && tar -zxf v${ISCE_VERSION}.tar.gz \
     && cd isce2-${ISCE_VERSION} \
-    && sed -i "s,SConscript('geo_autoRIFT/SConscript'),#SConscript('geo_autoRIFT/SConscript'),g" contrib/SConscript \
     && export PYTHONPATH=/tmp/isce2-${ISCE_VERSION}/configuration \
     && export SCONS_CONFIG_DIR=/tmp \
     && scons install --skipcheck \
@@ -31,17 +29,16 @@ RUN wget https://github.com/isce-framework/isce2/archive/v${ISCE_VERSION}.tar.gz
 
 # Multistage build reduces size (no need for compilers and development libraries)
 # ----------------------------------
-FROM ubuntu:20.04 as run
+FROM ubuntu:18.04 as run
 
-ENV ISCE_VERSION=2.4.1
+ENV ISCE_VERSION=2.4.0
 ENV USER ubuntu
 ENV UID 1000
 
-# Install run-time libraries, AWS cli
+# Install run-time libraries
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update \
-    && apt-get install -y zip curl libfftw3-3 python3 cython3 python3-scipy python3-matplotlib python3-h5py python3-gdal python3-pip aria2 \
-    && pip3 install awscli --no-cache-dir --system \
+    && apt-get install -y zip curl libfftw3-3 python3 cython3 python3-scipy python3-matplotlib python3-h5py python3-gdal python3-pip python3-opencv aria2 \
     && apt-get clean \
     &&  rm -rf /var/lib/apt/lists/*
 
@@ -56,6 +53,9 @@ WORKDIR /home/ubuntu
 # Copy ISCE installation files and entrypoint script
 COPY --chown=ubuntu:ubuntu --from=build /opt /opt
 COPY --chown=ubuntu:ubuntu fetch_and_run.sh /opt/bin/fetch_and_run.sh
+
+# Install aws cli
+RUN pip3 install awscli==1.18.25 --no-cache-dir
 
 # Setup ISCE environment
 ENV ISCE_ROOT /opt/isce2-${ISCE_VERSION}
