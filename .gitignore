@@ -1,4 +1,6 @@
 # Custom stuff
+aws/
+docker-tests/
 *tar.gz
 examples/
 docs/source

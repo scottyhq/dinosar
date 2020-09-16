@@ -13,16 +13,16 @@ topsinsar:
   demfilename: /home/ubuntu/isce-dems/demLat_N45_N48_Lon_W122_W119_15m.dem.wgs84
   usegpu: False
 
-  master:
+  reference:
     safe: ''
-    output directory: masterdir
+    output directory: referencedir
     auxiliary data directory: /home/ubuntu/s1-auxcal
     orbit directory: /home/ubuntu/s1-poeorb
     polarization: vv
 
-  slave:
+  secondary:
     safe: ''
-    output directory: slavedir
+    output directory: secondarydir
     auxiliary data directory: /home/ubuntu/s1-auxcal
     orbit directory: /home/ubuntu/s1-poeorb
     polarization: vv

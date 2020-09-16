@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dinosar"
-version = "0.0.0"
+version = "0.1.4"
 description = "SAR processing on the Cloud"
 authors = ["Scott Henderson <scotty@uw.edu>"]
 license = "MIT"

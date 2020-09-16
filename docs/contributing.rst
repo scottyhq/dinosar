@@ -54,5 +54,6 @@ Releasing new versions
 ----------------------
 This repository is setup with GitHub Actions CI/CD, so pushing a tag to the master branch uploads a new release to PyPi::
 
-  VERSION=v0.1.3
+  # ** Be sure to bump version string in pyproject.toml **
+  VERSION=v0.2.0
   git tag $VERSION ; git push --tags

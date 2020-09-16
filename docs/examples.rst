@@ -51,15 +51,15 @@ Where dinosar-template.yml defines parameters for the topsApp.py workflow::
       demfilename: demLat_N45_N48_Lon_W122_W119_15m.dem.wgs84
       usegpu: False
 
-      master:
+      reference:
         safe: ''
-        output directory: masterdir
+        output directory: referencedir
         orbit directory: ./
         polarization: vv
 
-      slave:
+      secondary:
         safe: ''
-        output directory: slavedir
+        output directory: secondarydir
         orbit directory: ./
         polarization: vv
 
@@ -90,7 +90,7 @@ Instead of processing on your local machine, process on AWS (assumes AWS account
 Batch process interferograms on AWS
 -----------------------------------
 
-``dinosar`` has the ability to process a list of interferograms in parallel. Note, these are not aligned to a common master geometry, but rather processed in a pairwise fashion. You should specify a common geocode bounding box so that all interferograms end up on the same grid. Generally, before submitting a batch job, we recommend::
+``dinosar`` has the ability to process a list of interferograms in parallel. Note, these are not aligned to a common reference geometry, but rather processed in a pairwise fashion. You should specify a common geocode bounding box so that all interferograms end up on the same grid. Generally, before submitting a batch job, we recommend::
 
   aws s3 mb s3://batch-uniongap --region us-east-1
   aws s3 cp . s3://batch-uniongap/dem/ --recursive --exclude "*" --include "dem*"

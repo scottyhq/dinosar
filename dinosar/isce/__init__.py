@@ -42,7 +42,7 @@ def dict2xml(dictionary, root="topsApp", topcomp="topsinsar"):
         xml = f"    <component name='{name}'>\n"
         for prop, val in properties.items():
             xml += add_property(prop, val)
-        xml += f"    </component>\n"
+        xml += "    </component>\n"
         return xml
 
     dictionary = dictionary[topcomp]
@@ -73,8 +73,8 @@ def load_defaultDict(template):
         inputDict = {
             "topsinsar": {
                 "sensorname": "SENTINEL1",
-                "master": {"safe": ""},
-                "slave": {"safe": ""},
+                "reference": {"safe": ""},
+                "secondary": {"safe": ""},
             }
         }
     return inputDict

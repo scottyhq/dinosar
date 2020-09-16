@@ -35,9 +35,11 @@ def cmdLineParse():
         help="Inventory vector file (query.geojson)",
     )
     parser.add_argument(
-        "-m", type=str, dest="master", required=True, help="Master date"
+        "-m", type=str, dest="reference", required=True, help="reference date"
     )
-    parser.add_argument("-s", type=str, dest="slave", required=True, help="Slave date")
+    parser.add_argument(
+        "-s", type=str, dest="secondary", required=True, help="secondary date"
+    )
     parser.add_argument(
         "-p",
         type=str,
@@ -116,27 +118,27 @@ def main():
         inputDict = {
             "topsinsar": {
                 "sensorname": "SENTINEL1",
-                "master": {"safe": ""},
-                "slave": {"safe": ""},
+                "reference": {"safe": ""},
+                "secondary": {"safe": ""},
             }
         }
 
-    intdir = "int-{0}-{1}".format(inps.master, inps.slave)
+    intdir = "int-{0}-{1}".format(inps.reference, inps.secondary)
     if not os.path.isdir(intdir):
         os.mkdir(intdir)
     os.chdir(intdir)
 
-    master_urls = asf.get_slc_urls(gf, inps.master, inps.path)
-    slave_urls = asf.get_slc_urls(gf, inps.slave, inps.path)
-    downloadList = master_urls + slave_urls
-    inps.master_scenes = [os.path.basename(x) for x in master_urls]
-    inps.slave_scenes = [os.path.basename(x) for x in slave_urls]
+    reference_urls = asf.get_slc_urls(gf, inps.reference, inps.path)
+    secondary_urls = asf.get_slc_urls(gf, inps.secondary, inps.path)
+    downloadList = reference_urls + secondary_urls
+    inps.reference_scenes = [os.path.basename(x) for x in reference_urls]
+    inps.secondary_scenes = [os.path.basename(x) for x in secondary_urls]
 
     if inps.poeorb:
         try:
-            frame = os.path.basename(inps.master_scenes[0])
+            frame = os.path.basename(inps.reference_scenes[0])
             downloadList.append(asf.get_orbit_url(frame))
-            frame = os.path.basename(inps.slave_scenes[0])
+            frame = os.path.basename(inps.secondary_scenes[0])
             downloadList.append(asf.get_orbit_url(frame))
         except Exception as e:
             print("Trouble downloading POEORB... maybe scene is too recent?")
@@ -146,10 +148,10 @@ def main():
             pass
 
     # Update input dictionary with argparse inputs
-    inputDict["topsinsar"]["master"]["safe"] = inps.master_scenes
-    inputDict["topsinsar"]["master"]["output directory"] = "masterdir"
-    inputDict["topsinsar"]["slave"]["safe"] = inps.slave_scenes
-    inputDict["topsinsar"]["slave"]["output directory"] = "slavedir"
+    inputDict["topsinsar"]["reference"]["safe"] = inps.reference_scenes
+    inputDict["topsinsar"]["reference"]["output directory"] = "referencedir"
+    inputDict["topsinsar"]["secondary"]["safe"] = inps.secondary_scenes
+    inputDict["topsinsar"]["secondary"]["output directory"] = "secondarydir"
     # Optional inputs
     # swaths, poeorb, dem, roi, gbox, alooks, rlooks, filtstrength
     if inps.swaths:
