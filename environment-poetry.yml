@@ -4,10 +4,10 @@ channels:
   - conda-forge
 dependencies:
   - python=3.8
-  - msgpack-python<1
-  - poetry=1.0
-  - geopandas=0.7
+  - msgpack-python
+  - poetry
+  - geopandas
   - pyyaml
-  - pip=20.0
+  - pip
   - pip:
-    - poetry-dynamic-versioning~=0.5
+    - poetry-dynamic-versioning

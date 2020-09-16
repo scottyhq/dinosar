@@ -16,7 +16,7 @@ prep_topsApp_local = 'dinosar.cli.prep_topsApp_local:main'
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-geopandas = "^0.7"
+geopandas = "^0.8"
 pandas = "^1.0"
 shapely = "^1.6"
 matplotlib = "^3.1"
@@ -24,7 +24,7 @@ pyyaml = "^5.2"
 lxml = "^4.4"
 requests = "^2.22"
 # plotting/graphics libraries optional
-cartopy = { version = "^0.17", optional = true }
+cartopy = { version = "^0.18", optional = true }
 # documentation libraries optional
 sphinx = { version = "^2.3", optional = true }
 sphinx_rtd_theme = { version = "^0.4", optional = true }

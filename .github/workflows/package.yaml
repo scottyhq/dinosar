@@ -11,17 +11,16 @@ on:
 
 jobs:
   poetry:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
       - name: Setup Conda Environment
-        uses: goanpeca/setup-miniconda@v1
+        uses: conda-incubator/setup-miniconda@v1
         with:
            environment-file: environment-poetry.yml
            activate-environment: dinosar-dev
-           miniconda-version: 4.7.12
            auto-update-conda: true
 
       - name: Setup Poetry Virtualenv Cache
@@ -45,22 +44,20 @@ jobs:
 
       - name: Test with Pytest
         shell: bash -l {0}
-        run: poetry run pytest --cov=dinosar --cov-report=xml
+        run: poetry run pytest -o markers=network -m "not network" --cov=dinosar --cov-report=xml
 
       - name: Upload CodeCov Report for Badge
         uses: codecov/codecov-action@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} #required
-          file: ./coverage.xml #optional
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
 
       - name: Build Package with Poetry
         shell: bash -l {0}
         run: poetry build
 
-      - name: Push package to Test PyPi
-        # NOTE: can do this for a pull request and publish to actual PyPi after tagging release
+      - name: Push package to PyPi
         if: startswith(github.ref, 'refs/tags')
         shell: bash -l {0}
         run: |
-          poetry config repositories.testpypi https://test.pypi.org/legacy/
-          poetry publish -r testpypi -u ${{ secrets.TESTPYPI_USER }} -p ${{ secrets.TESTPYPI_PASS }}
+          poetry publish -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_PASS }}

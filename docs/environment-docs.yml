@@ -1,9 +1,8 @@
 # Development venv for readthedocs
 name: dinosar-docs
 dependencies:
-  - python=3.7
-  - geopandas=0.6
-#  - cartopy=0.17
-  - pip=20.0
+  - python
+  - geopandas
+  - pip
   - pip:
     - ..[docs]
