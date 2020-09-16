@@ -9,7 +9,7 @@ WORKDIR /tmp
 
 COPY SConfigISCE /tmp/
 
-# Update Base Ubuntu installation
+# Update Base Ubuntu installation, system libraries for compiling ISCE
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update \
     && apt-get install -y wget gfortran scons libmotif-dev libhdf5-dev libfftw3-dev libgdal-dev \
@@ -37,10 +37,11 @@ ENV ISCE_VERSION=2.4.1
 ENV USER ubuntu
 ENV UID 1000
 
-# Install run-time libraries
+# Install run-time libraries, AWS cli
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update \
     && apt-get install -y zip curl libfftw3-3 python3 cython3 python3-scipy python3-matplotlib python3-h5py python3-gdal python3-pip aria2 \
+    && pip3 install awscli --no-cache-dir --system \
     && apt-get clean \
     &&  rm -rf /var/lib/apt/lists/*
 
@@ -55,9 +56,6 @@ WORKDIR /home/ubuntu
 # Copy ISCE installation files and entrypoint script
 COPY --chown=ubuntu:ubuntu --from=build /opt /opt
 COPY --chown=ubuntu:ubuntu fetch_and_run.sh /opt/bin/fetch_and_run.sh
-
-# Install aws cli
-RUN pip3 install awscli==1.18.25 --no-cache-dir
 
 # Setup ISCE environment
 ENV ISCE_ROOT /opt/isce2-${ISCE_VERSION}

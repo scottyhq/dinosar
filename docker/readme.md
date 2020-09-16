@@ -2,10 +2,9 @@
 
 These images are intended to be as small as possible. Installing on top of Ubuntu 18.04 and required python packages all installed through apt. (Python 3.6)
 
-isce-2.3.2: basic config (758MB)
-isce-2.3.2-mdx: MDX / X11 graphics support (798MB)
-isce-2.3.2-gpu: NVIDIA GPU support (783MB)
-* awscli = 1.18.25
+* isce-2.3.2: basic config (758MB)
+* isce-2.3.2-mdx: MDX / X11 graphics support (798MB)
+* isce-2.3.2-gpu: NVIDIA GPU support (783MB)
 
 Alternatively, you can now install isce2 via conda-forge. This enables much more up-to-date versions, but generally results in a much larger image.
 
