@@ -24,7 +24,7 @@ Dependency management and Python package creation is done with Poetry_, and pre-
   cd dinosar
   conda env create -f environment-poetry.yml
   conda activate dinosar-dev
-  poetry install
+  poetry install -E "vis docs"
   poetry run pre-commit install
 
 .. _pre-commit: https://pre-commit.com
@@ -38,7 +38,6 @@ Run tests locally with pre-commit and pytest::
 
   poetry run pre-commit run --all-files
   poetry run pytest --cov=dinosar --cov-report=xml
-  poetry export --without-hashes -f requirements.txt > requirements.txt
 
 Preview documentation
 ---------------------
