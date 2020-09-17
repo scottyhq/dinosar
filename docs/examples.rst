@@ -53,13 +53,13 @@ Where dinosar-template.yml defines parameters for the topsApp.py workflow::
 
       reference:
         safe: ''
-        output directory: referencedir
+        output directory: reference
         orbit directory: ./
         polarization: vv
 
       secondary:
         safe: ''
-        output directory: secondarydir
+        output directory: secondary
         orbit directory: ./
         polarization: vv
 

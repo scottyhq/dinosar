@@ -15,14 +15,14 @@ topsinsar:
 
   reference:
     safe: ''
-    output directory: referencedir
+    output directory: reference
     auxiliary data directory: /home/ubuntu/s1-auxcal
     orbit directory: /home/ubuntu/s1-poeorb
     polarization: vv
 
   secondary:
     safe: ''
-    output directory: secondarydir
+    output directory: secondary
     auxiliary data directory: /home/ubuntu/s1-auxcal
     orbit directory: /home/ubuntu/s1-poeorb
     polarization: vv

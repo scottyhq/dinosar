@@ -149,9 +149,9 @@ def main():
 
     # Update input dictionary with argparse inputs
     inputDict["topsinsar"]["reference"]["safe"] = inps.reference_scenes
-    inputDict["topsinsar"]["reference"]["output directory"] = "referencedir"
+    # inputDict["topsinsar"]["reference"]["output directory"] = "reference"
     inputDict["topsinsar"]["secondary"]["safe"] = inps.secondary_scenes
-    inputDict["topsinsar"]["secondary"]["output directory"] = "secondarydir"
+    # inputDict["topsinsar"]["secondary"]["output directory"] = "secondary"
     # Optional inputs
     # swaths, poeorb, dem, roi, gbox, alooks, rlooks, filtstrength
     if inps.swaths:
