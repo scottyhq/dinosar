@@ -31,7 +31,7 @@ Local processing of single interferometric pair
 
 To run ISCE topsApp.py you need to download SLC data from ASF vertex for two dates, as well as precise orbit data files, and create a processing settings file in XML format. ``dinosar`` simplifies this setup with a script. It's common to use similar settings for many interferograms, so you can set processing parameters in a simple YML template file::
 
-    prep_topsApp_local -i query.geojson -m 20180706 -s 20180624 -p 115 -t dinosar-template.yml
+    prep_topsApp_local -i query.geojson -r 20180706 -s 20180624 -p 115 -t dinosar-template.yml
 
 
 Where dinosar-template.yml defines parameters for the topsApp.py workflow::

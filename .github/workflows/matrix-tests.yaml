@@ -3,7 +3,7 @@ name: Conda-Matrix
 
 on:
   pull_request:
-    branches: master
+    branches: main
 
 jobs:
   conda:
@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest]
-        CONDA_ENV: [3.7, 3.8]
+        CONDA_ENV: [3.7, 3.8, 3.9]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
