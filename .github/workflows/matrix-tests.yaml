@@ -6,9 +6,26 @@ on:
     branches: main
 
 jobs:
+  quality-control:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # NOTE: this isn't a comprehensive spellcheck, just common typos
+    - name: Spellcheck
+      uses: codespell-project/actions-codespell@master
+      with:
+        check_filenames: true
+        check_hidden: true
+        only_warn: true
+
   conda:
     name: ${{ matrix.os }}-${{ matrix.CONDA_ENV }}-build
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       fail-fast: false
       matrix:
@@ -18,23 +35,29 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Setup Conda Environment
-        uses: conda-incubator/setup-miniconda@v1
+      - name: Cache conda
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0
         with:
-           environment-file: ci/environment-dev-py${{ matrix.CONDA_ENV }}.yml
-           auto-activate-base: false
-           activate-environment: dinosar
-           miniconda-version: latest
-           auto-update-conda: true
+          path: ~/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles(${{ matrix.CONDA_ENV }}.yml) }}
+
+      - name: Setup Conda Environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: latest
+          environment-file: ci/environment-dev-py${{ matrix.CONDA_ENV }}.yml
+          activate-environment: dinosar
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
 
       - name: Install Dinosar From Latest Commit
-        shell: bash -l {0}
         run: |
           conda --version
           python -m pip install .
           conda list
 
       - name: Run PyTest
-        shell: bash -l {0}
         run: |
           pytest  -o markers=network -m "not network" --verbose --cov=dinosar --cov-report=xml
