@@ -6,7 +6,7 @@ on:
     branches: main
 
 jobs:
-  quality-control:
+  spellcheck:
     runs-on: ubuntu-20.04
 
     steps:
@@ -21,7 +21,7 @@ jobs:
         only_warn: true
 
   conda:
-    name: ${{ matrix.os }}-${{ matrix.CONDA_ENV }}-build
+    name: ${{ matrix.os }}-py${{ matrix.CONDA_ENV }}
     runs-on: ${{ matrix.os }}
     defaults:
       run:
