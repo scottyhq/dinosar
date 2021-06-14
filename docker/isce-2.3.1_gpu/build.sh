@@ -1,4 +1,4 @@
-# Script to retrive ISCE source code and create a docker container
+# Script to retreive ISCE source code and create a docker container
 echo '\n***** Downloading ISCE from github... *****\n'
 wget https://github.com/isce-framework/isce2/archive/v2.3.1.tar.gz
 echo '\n***** Starting Docker multistage build *****\n'

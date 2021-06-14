@@ -356,7 +356,7 @@ def get_orbit_url_file(
 def get_orbit_url(granuleName, url="https://s1qc.asf.alaska.edu/aux_poeorb"):
     """Retrieve precise orbit file for a specific Sentinel-1 granule.
 
-    Precise orbits available ~3 weeks after aquisition.
+    Precise orbits available ~3 weeks after acquisition.
 
     Parameters
     ----------
@@ -464,7 +464,7 @@ def ogr2snwe(vectorFile, buffer=None):
     Returns
     -------
     snwe :  list
-        a list of coorinate bounds [S, N, W, E]
+        a list of coordinate bounds [S, N, W, E]
 
     """
     gf = gpd.read_file(vectorFile)
