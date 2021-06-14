@@ -2,26 +2,39 @@ name: Package
 
 on:
   pull_request:
-    branches: master
+    branches: main
   push:
     branches:
-      - master
+      - main
     tags:
       - '*'
 
 jobs:
   poetry:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
 
-      - name: Setup Conda Environment
-        uses: conda-incubator/setup-miniconda@v1
+      - name: Cache conda
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0
         with:
-           environment-file: environment-poetry.yml
-           activate-environment: dinosar-dev
-           auto-update-conda: true
+          path: ~/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment-poetry.yml') }}
+
+      - name: Setup Conda Environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniforge-version: latest
+          environment-file: environment-poetry.yml
+          activate-environment: dinosar-dev
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
 
       - name: Setup Poetry Virtualenv Cache
         uses: actions/cache@v1
@@ -33,17 +46,14 @@ jobs:
 
       - name: Install Python Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        shell: bash -l {0}
         run: |
           poetry config --list
           poetry install
 
       - name: Code Quality
-        shell: bash -l {0}
         run: poetry run black . --check
 
       - name: Test with Pytest
-        shell: bash -l {0}
         run: poetry run pytest -o markers=network -m "not network" --cov=dinosar --cov-report=xml
 
       - name: Upload CodeCov Report for Badge
@@ -53,11 +63,9 @@ jobs:
           file: ./coverage.xml
 
       - name: Build Package with Poetry
-        shell: bash -l {0}
         run: poetry build
 
       - name: Push package to PyPi
         if: startswith(github.ref, 'refs/tags')
-        shell: bash -l {0}
         run: |
           poetry publish -u ${{ secrets.PYPI_USER }} -p ${{ secrets.PYPI_PASS }}

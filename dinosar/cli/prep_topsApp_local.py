@@ -35,7 +35,7 @@ def cmdLineParse():
         help="Inventory vector file (query.geojson)",
     )
     parser.add_argument(
-        "-m", type=str, dest="reference", required=True, help="reference date"
+        "-r", type=str, dest="reference", required=True, help="reference date"
     )
     parser.add_argument(
         "-s", type=str, dest="secondary", required=True, help="secondary date"
@@ -93,10 +93,10 @@ def cmdLineParse():
         help="Geocode bbox [S,N,W,E]",
     )
     parser.add_argument(
-        "-a", type=int, dest="alooks", required=False, help="Azimuthlooks"
+        "-al", type=int, dest="alooks", required=False, help="Azimuthlooks"
     )
     parser.add_argument(
-        "-r", type=int, dest="rlooks", required=False, help="Rangelooks"
+        "-rl", type=int, dest="rlooks", required=False, help="Rangelooks"
     )
     parser.add_argument(
         "-f", type=float, dest="filtstrength", required=False, help="Filter strength"

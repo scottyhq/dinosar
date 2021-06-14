@@ -4,10 +4,8 @@ channels:
   - conda-forge
 dependencies:
   - python=3.8
+  - geopandas
   - msgpack-python
   - poetry
-  - geopandas
+  - poetry-dynamic-versioning
   - pyyaml
-  - pip
-  - pip:
-    - poetry-dynamic-versioning

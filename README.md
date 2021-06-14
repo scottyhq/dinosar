@@ -1,6 +1,6 @@
 ![Action Status](https://github.com/scottyhq/dinosar/workflows/Package/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/dinosar/badge/?version=latest)](https://dinosar.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/scottyhq/dinosar/branch/master/graph/badge.svg)](https://codecov.io/gh/scottyhq/dinosar)
+[![codecov](https://codecov.io/gh/scottyhq/dinosar/branch/main/graph/badge.svg)](https://codecov.io/gh/scottyhq/dinosar)
 
 # dinoSAR
 

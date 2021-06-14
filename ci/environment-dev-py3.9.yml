@@ -1,0 +1,14 @@
+name: dinosar
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9
+  - geopandas
+  - cartopy
+  - pyyaml
+  - lxml
+  - pytest
+  - pytest-cov
+  - flake8
+  - black
+  - awscli
