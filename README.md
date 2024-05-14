@@ -2,6 +2,9 @@
 [![Documentation Status](https://readthedocs.org/projects/dinosar/badge/?version=latest)](https://dinosar.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/scottyhq/dinosar/branch/main/graph/badge.svg)](https://codecov.io/gh/scottyhq/dinosar)
 
+** dinoSAR was a prototype of running batch processing on AWS Batch, in the meantime, Alaska Satellite Facility has put a lot of time and development into [`HyP3`](https://hyp3-docs.asf.alaska.edu) for scalable SAR processing (hyp3 uses AWS Batch behind the scenes). As dinoSAR is no longer actively developed, we recommend using HyP3 or other software going forward! **  
+
+
 # dinoSAR
 
 dinoSAR facilitates processesing InSAR data on the Cloud.
